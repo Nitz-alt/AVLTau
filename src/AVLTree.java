@@ -61,7 +61,6 @@ public class AVLTree {
 		  }
 	  }
 	  return tempNode;
-	  
   }
 
   /**
@@ -97,9 +96,9 @@ public class AVLTree {
 			   maxNode = inNode;
 		   }   
 	   }
-	  
 		 insertByCase(searchNodeResult,inNode);
 	   }
+   
    //Determines side of insertion
    public int insertByCase(IAVLNode posNode, IAVLNode newNode) {
 	   int numOps = 0;
@@ -127,11 +126,11 @@ public class AVLTree {
 	  newNode.setParent(posNode);
 	  newNode.setLeft(VIRTUAL_NODE);
 	  newNode.setRight(VIRTUAL_NODE);
-	  newNode.
+	  
 	  
   }
    
-   
+  
   
   /**
    * public int delete(int k)
@@ -248,14 +247,58 @@ public class AVLTree {
 	   return -1;
    }
 
-   public void rotateRight(IAVLNode x, IAVLNode y) {
-	    IAVLNode xPrevRightChildNode = x.getRight();
-	    x.setRight(y);
-	    x.setParent(y.getParent());
-	    y.setParent(x);
-	    y.setLeft(xPrevRightChildNode);
-	    xPrevRightChildNode.setParent(y);
+   public void rotateRight(IAVLNode x) {
+       IAVLNode z = x.getParent();
+       IAVLNode b = x.getRight();
+       IAVLNode zParent = z.getParent();
+       IAVLNode a = x.getLeft();
+       if (this.isRoot(z)) {
+           this.rootNode = x;
+       }
+       else if (isRightSon(z)) {
+           zParent.setRight(x);
+       }
+       else {
+           zParent.setLeft(x);
+       }
+       x.setParent(zParent);
+       x.setRight(z);
+       z.setParent(x);
+       z.setLeft(b);
+       b.setParent(z);
+       z.setHeight(z.getHeight()-1);
+       int zTempSize = z.getSubTreeSize();
+       z.setSubTreeSize(zTempSize - a.getSubTreeSize());
+       x.setSubTreeSize(zTempSize);
    }
+   
+   public void rotateLeft(IAVLNode x){
+	   IAVLNode z = x.getParent();
+	   IAVLNode b = x.getLeft();
+	   IAVLNode zParent = z.getParent();
+	   IAVLNode a = x.getRight();
+	      if(this.isRoot(z)){
+	          this.rootNode = x;
+	      }
+	      else if(isRightSon(z)){
+	          zParent.setRight(x);
+	      }
+	      else{
+	          zParent.setLeft(x);
+	      }
+	      x.setParent(zParent);
+	      x.setLeft(z);
+	      z.setParent(x);;
+	      z.setRight(b);
+	      b.setParent(z);
+	      z.setHeight(z.getHeight()-1);
+	      int zTempSize = z.getSubTreeSize();
+	      z.setSubTreeSize(zTempSize - a.getSubTreeSize());
+	      x.setSubTreeSize(zTempSize); 
+	  }
+   public static boolean isRightSon(IAVLNode son){
+       return son.getParent().getRight().getKey() == son.getKey(); 
+       }
    
    public void rotateLeft(IAVLNode y, IAVLNode x) {
 	    IAVLNode yPrevLeftChildNode = y.getLeft();
@@ -265,6 +308,10 @@ public class AVLTree {
 	    x.setParent(y);
 	    yPrevLeftChildNode.setParent(x);
   }
+   
+   public boolean isRoot(IAVLNode node){
+	       return node.getKey() == this.rootNode.getKey();
+	      }
 	/** 
 	 * public interface IAVLNode
 	 * ! Do not delete or modify this - otherwise all tests will fail !
@@ -282,6 +329,8 @@ public class AVLTree {
     	public void setHeight(int height); // Sets the height of the node.
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
     	public int subTreeSize();
+    	public void setSubTreeSize(int size);
+    	public int getSubTreeSize();
 	}
 
    /** 
@@ -301,9 +350,11 @@ public class AVLTree {
 	  	private int subTreeSize;
 	  	
 	  	
+	  	
 	  	public AVLNode(int key, String value) {
 	  		this.key = key;
 	  		this.value = value;
+	  		this.subTreeSize = subTreeSize();
 	  		
 	  	}
 	  	
@@ -314,6 +365,7 @@ public class AVLTree {
 	  		this.parentNode = (AVLTree.AVLNode) parentNode;
 	  		this.leftSonNode = (AVLTree.AVLNode) left;
 	  		this.rightSonNode = (AVLTree.AVLNode) right;
+	  		this.subTreeSize = subTreeSize();
 	  		
 	  	}
 	  	
@@ -392,6 +444,15 @@ public class AVLTree {
 			}
 			return this.getLeft().subTreeSize() + this.getRight().subTreeSize() + 1;
 		}
+		
+		public void setSubTreeSize(int size) {
+			this.subTreeSize = size;
+		}
+		
+		public int  getSubTreeSize() {
+			return this.subTreeSize;
+		}
+		
 	    
 		
   }
