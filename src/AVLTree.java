@@ -1,5 +1,3 @@
-import org.w3c.dom.Node;
-
 /**
  *
  * AVLTree
@@ -19,7 +17,7 @@ public class AVLTree {
    *
    */
   public boolean empty() {
-    return false; // to be replaced by student code
+    return this.rootNode == null;
   }
 
  /**
@@ -30,7 +28,19 @@ public class AVLTree {
    */
   public String search(int k)
   {
-	return "searchDefaultString";  // to be replaced by student code
+	  AVLNode currNode = this.rootNode;
+	  while (currNode.isRealNode()) {
+		  if (currNode.key == k) {
+			  return currNode.value;
+		  }
+		  if (k < currNode.key) {
+			  currNode = currNode.leftSonNode;
+		  }
+		  else {
+			  currNode = currNode.rightSonNode;
+		  }
+	  }
+	  return null;
   }
 
   /**
