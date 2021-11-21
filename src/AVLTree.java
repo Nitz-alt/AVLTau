@@ -44,6 +44,25 @@ public class AVLTree {
 	  }
 	  return null;
   }
+  
+  // Looks for key in the subtree of node. If it is found, return it. Else, returns the last node encountered 
+  public IAVLNode treePosition(IAVLNode node, int key) {
+	  IAVLNode tempNode = node;
+	  while(node != null) {
+		  tempNode = node; 
+		  if(key == node.getKey()) {
+			  return tempNode;
+		  }
+		  else if( key < node.getKey()) {
+			  node = node.getLeft();
+		  }
+		  else {
+			  node = node.getRight();
+		  }
+	  }
+	  return tempNode;
+	  
+  }
 
   /**
    * public int insert(int k, String i)
@@ -55,9 +74,65 @@ public class AVLTree {
    * Returns -1 if an item with key k already exists in the tree.
    */
    public int insert(int k, String i) {
-	  return 420;	// to be replaced by student code
+	   int numOfOps = 0;
+	   IAVLNode searchNodeResult = treePosition(rootNode, k);
+	   IAVLNode inNode = new AVLNode(k,i);
+	   // If tree is empty, insert node in the root.
+	   if(searchNodeResult == null) { 
+		  this.rootNode = new AVLNode(k,i,null, VIRTUAL_NODE,VIRTUAL_NODE,0);
+		  this.maxNode = rootNode;
+		  this.minNode = rootNode;
+		  return 0;
+	   }
+	   // If node is found in the tree, we do nothing, num of operations has not changed.
+	   else if(searchNodeResult.getKey() == k) {
+		   return -1;
+	   }
+	   // Node isn't in the tree, insertions and modifications are necessary.
+	   else {
+		   if(inNode.getKey() < minNode.getKey()) {
+			   minNode = inNode;
+		   }
+		   else if(inNode.getKey() > maxNode.getKey()) {
+			   maxNode = inNode;
+		   }   
+	   }
+	  
+		 insertByCase(searchNodeResult,inNode);
+	   }
+   //Determines side of insertion
+   public int insertByCase(IAVLNode posNode, IAVLNode newNode) {
+	   int numOps = 0;
+	   if (newNode.getKey() > posNode.getKey()) {
+		   numOps = rightInsert(IAVLNode posNode, IAVLNode newNode);
+	   }
+	   else {
+		   numOps = leftInsert(IAVLNode posNode, IAVLNode newNode);
+	   }
+	   return numOps;
    }
-
+// Determines case of insertion for right side insertion  
+  public int rightInsert(IAVLNode posNode, IAVLNode newNode) {
+	  int numOps = 0;
+	  // parent is Unary node
+	  if(posNode.getRight() == VIRTUAL_NODE && posNode.getLeft().getHeight() == 0) {
+		  numOps = unaryInsert(IAVLNode posNode, IAVLNode newNode);
+	  }
+  }
+  
+  public int unaryNodeInsert(IAVLNode posNode, IAVLNode newNode) {
+	  posNode.setRight(newNode);
+	  newNode.setHeight(0);
+	  posNode.setHeight(1);
+	  newNode.setParent(posNode);
+	  newNode.setLeft(VIRTUAL_NODE);
+	  newNode.setRight(VIRTUAL_NODE);
+	  newNode.
+	  
+  }
+   
+   
+  
   /**
    * public int delete(int k)
    *
@@ -132,7 +207,7 @@ public class AVLTree {
     */
    public int size()
    {
-	   return 422; // to be replaced by student code
+	return rootNode.subTreeSize();	   
    }
    
    /**
@@ -206,6 +281,7 @@ public class AVLTree {
 		public boolean isRealNode(); // Returns True if this is a non-virtual AVL node.
     	public void setHeight(int height); // Sets the height of the node.
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
+    	public int subTreeSize();
 	}
 
    /** 
@@ -222,58 +298,102 @@ public class AVLTree {
 	  	private int height;
 	  	private int key;
 	  	private String value;
+	  	private int subTreeSize;
+	  	
 	  	
 	  	public AVLNode(int key, String value) {
 	  		this.key = key;
 	  		this.value = value;
+	  		
 	  	}
+	  	
+	  	public AVLNode(int key, String value, IAVLNode parentNode, IAVLNode left, IAVLNode right, int height) {
+	  		this.key = key;
+	  		this.height =height;
+	  		this.value = value;
+	  		this.parentNode = (AVLTree.AVLNode) parentNode;
+	  		this.leftSonNode = (AVLTree.AVLNode) left;
+	  		this.rightSonNode = (AVLTree.AVLNode) right;
+	  		
+	  	}
+	  	
 	  	public AVLNode() {
 	  		this.height = -1;
 	  	}
+	  	
 		public int getKey()
 		{
 			return this.key;
 		}
+		
 		public String getValue()
 		{
 			return value;
 		}
+		
 		public void setLeft(IAVLNode node)
 		{
 			this.leftSonNode = (AVLNode) node;
 		}
+		
 		public IAVLNode getLeft()
 		{
 			return this.leftSonNode;
 		}
+		
 		public void setRight(IAVLNode node)
 		{
 			this.rightSonNode = (AVLNode) node;
 		}
+		
 		public IAVLNode getRight()
 		{
 			return this.rightSonNode;
 		}
+		
 		public void setParent(IAVLNode node)
 		{
 			this.parentNode = (AVLNode) node;
 		}
+		
 		public IAVLNode getParent()
 		{
 			return this.parentNode;
 		}
+		
 		public boolean isRealNode()
 		{
 			return this.height != -1;
 		}
+		
 	    public void setHeight(int height)
 	    {
 	      this.height = height;
 	    }
+	    
 	    public int getHeight()
 	    {
 	    	return this.height;
 	    }
+
+		public boolean isLeaf() {
+			if(this.isRealNode() && this.getLeft() == null && this.getRight() == null) {
+				return true;
+			}
+			return false;
+		}
+		
+		public int subTreeSize() {
+			if (!this.isRealNode()) {
+				return 0;
+			}
+			if(this.isLeaf()) {
+				return 1;
+			}
+			return this.getLeft().subTreeSize() + this.getRight().subTreeSize() + 1;
+		}
+	    
+		
   }
 }
   
