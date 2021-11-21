@@ -1,10 +1,10 @@
-import org.w3c.dom.Node;
+
 
 /**
  *
  * AVLTree
  *
- * An implementation of aמ AVL Tree with
+ * An implementation of a׳� AVL Tree with
  * distinct integer keys and info.
  *
  */
@@ -12,6 +12,8 @@ import org.w3c.dom.Node;
 public class AVLTree {
 	final IAVLNode VIRTUAL_NODE = new AVLNode();
 	private AVLNode rootNode;
+	private IAVLNode minNode;
+	private IAVLNode maxNode;
   /**
    * public boolean empty()
    *
@@ -19,7 +21,7 @@ public class AVLTree {
    *
    */
   public boolean empty() {
-    return false; // to be replaced by student code
+    return !this.rootNode.isRealNode();
   }
 
  /**
@@ -68,10 +70,18 @@ public class AVLTree {
     */
    public String min()
    {
-	   return "minDefaultString"; // to be replaced by student code
+	   return this.minNode.getValue(); 
+	   /**IAVLNode currNode = this.rootNode;
+	   while(currNode.getLeft().isRealNode()) {
+		   currNode= currNode.getLeft();
+	   }
+	   return currNode.getValue();
+	   */
    }
+   
 
    /**
+    * 
     * public String max()
     *
     * Returns the info of the item with the largest key in the tree,
@@ -79,7 +89,7 @@ public class AVLTree {
     */
    public String max()
    {
-	   return "maxDefaultString"; // to be replaced by student code
+	 return this.maxNode.getValue(); 
    }
 
   /**
