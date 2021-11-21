@@ -173,6 +173,23 @@ public class AVLTree {
 	   return -1;
    }
 
+   public void rotateRight(IAVLNode x, IAVLNode y) {
+	    IAVLNode xPrevRightChildNode = x.getRight();
+	    x.setRight(y);
+	    x.setParent(y.getParent());
+	    y.setParent(x);
+	    y.setLeft(xPrevRightChildNode);
+	    xPrevRightChildNode.setParent(y);
+   }
+   
+   public void rotateLeft(IAVLNode y, IAVLNode x) {
+	    IAVLNode yPrevLeftChildNode = y.getLeft();
+	    y.setLeft(x);
+	    x.setRight(yPrevLeftChildNode);
+	    y.setParent(x.getParent());
+	    x.setParent(y);
+	    yPrevLeftChildNode.setParent(x);
+  }
 	/** 
 	 * public interface IAVLNode
 	 * ! Do not delete or modify this - otherwise all tests will fail !
