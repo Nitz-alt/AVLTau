@@ -1,3 +1,5 @@
+import org.w3c.dom.Node;
+
 /**
  *
  * AVLTree
@@ -8,7 +10,8 @@
  */
 
 public class AVLTree {
-
+	final IAVLNode VIRTUAL_NODE = new AVLNode();
+	private AVLNode rootNode;
   /**
    * public boolean empty()
    *
@@ -177,51 +180,63 @@ public class AVLTree {
     * This class can and MUST be modified (It must implement IAVLNode).
     */
   public class AVLNode implements IAVLNode{
+	  	private AVLNode parentNode;
+	  	private AVLNode leftSonNode, rightSonNode;
+	  	private int height;
+	  	private int key;
+	  	private String value;
+	  	
+	  	public AVLNode(int key, String value) {
+	  		this.key = key;
+	  		this.value = value;
+	  	}
+	  	public AVLNode() {
+	  		this.height = -1;
+	  	}
 		public int getKey()
 		{
-			return 423; // to be replaced by student code
+			return this.key;
 		}
 		public String getValue()
 		{
-			return "getValueDefault"; // to be replaced by student code
+			return value;
 		}
 		public void setLeft(IAVLNode node)
 		{
-			return; // to be replaced by student code
+			this.leftSonNode = (AVLNode) node;
 		}
 		public IAVLNode getLeft()
 		{
-			return null; // to be replaced by student code
+			return this.leftSonNode;
 		}
 		public void setRight(IAVLNode node)
 		{
-			return; // to be replaced by student code
+			this.rightSonNode = (AVLNode) node;
 		}
 		public IAVLNode getRight()
 		{
-			return null; // to be replaced by student code
+			return this.rightSonNode;
 		}
 		public void setParent(IAVLNode node)
 		{
-			return; // to be replaced by student code
+			this.parentNode = (AVLNode) node;
 		}
 		public IAVLNode getParent()
 		{
-			return null; // to be replaced by student code
+			return this.parentNode;
 		}
 		public boolean isRealNode()
 		{
-			return true; // to be replaced by student code
+			return this.height != -1;
 		}
 	    public void setHeight(int height)
 	    {
-	      return; // to be replaced by student code
+	      this.height = height;
 	    }
 	    public int getHeight()
 	    {
-	      return 424; // to be replaced by student code
+	    	return this.height;
 	    }
   }
-
 }
   
