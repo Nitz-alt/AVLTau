@@ -2,7 +2,7 @@
  *
  * AVLTree
  *
- * An implementation of aמ AVL Tree with
+ * An implementation of a׳� AVL Tree with
  * distinct integer keys and info.
  *
  */
@@ -80,10 +80,18 @@ public class AVLTree {
     */
    public String min()
    {
-	   return "minDefaultString"; // to be replaced by student code
+	   return this.minNode.getValue(); 
+	   /**IAVLNode currNode = this.rootNode;
+	   while(currNode.getLeft().isRealNode()) {
+		   currNode= currNode.getLeft();
+	   }
+	   return currNode.getValue();
+	   */
    }
+   
 
    /**
+    * 
     * public String max()
     *
     * Returns the info of the item with the largest key in the tree,
@@ -91,7 +99,7 @@ public class AVLTree {
     */
    public String max()
    {
-	   return "maxDefaultString"; // to be replaced by student code
+	 return this.maxNode.getValue(); 
    }
 
   /**
