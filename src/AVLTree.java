@@ -1,5 +1,3 @@
-
-
 /**
  *
  * AVLTree
@@ -11,7 +9,7 @@
 
 public class AVLTree {
 	final IAVLNode VIRTUAL_NODE = new AVLNode();
-	private AVLNode rootNode;
+	private IAVLNode rootNode = VIRTUAL_NODE;
 	private IAVLNode minNode;
 	private IAVLNode maxNode;
   /**
@@ -32,7 +30,19 @@ public class AVLTree {
    */
   public String search(int k)
   {
-	return "searchDefaultString";  // to be replaced by student code
+	  IAVLNode currNode = this.rootNode;
+	  while (currNode.isRealNode()) {
+		  if (currNode.getKey() == k) {
+			  return currNode.getValue();
+		  }
+		  if (k < currNode.getKey()) {
+			  currNode = currNode.getLeft();
+		  }
+		  else {
+			  currNode = currNode.getRight();
+		  }
+	  }
+	  return null;
   }
 
   /**
