@@ -1,3 +1,5 @@
+import java.time.Year;
+
 /**
  *
  * AVLTree
@@ -69,9 +71,82 @@ public class AVLTree {
    */
    public int delete(int k)
    {
-	   return 421;	// to be replaced by student code
+	   int total = 0; 
+	   IAVLNode currNode = searchNode(k); 
+	   if (!currNode.isRealNode()) return -1; // Key not in tree
+	   if (currNode != this.rootNode) { // Node is not the root
+		   IAVLNode parentNode = currNode.getParent();
+		   IAVLNode leftChildNode = currNode.getLeft();
+		   IAVLNode rightChildNode = currNode.getRight();
+		   if (!leftChildNode.isRealNode() && !rightChildNode.isRealNode()) { // The node is a a leaf
+			   int leftRankDelta = parentNode.getHeight() - currNode.getHeight();
+			   int rightRankDelta = parentNode.getHeight() - parentNode.getRight().getHeight();
+			   // The junction is a (leftRankDelta, rightRankDelta).
+			   if (leftRankDelta == 1 && rightRankDelta == 1) { // Junction is 1, 1 can just delete
+				   
+				   this.deletionNode(currNode); // Deletion
+				   
+				   return 0;
+			   }
+			   else if ((leftRankDelta == 1 && rightRankDelta == 2) || (leftRankDelta == 2 && rightRankDelta == 1)) { // Junction is 1,2 or 2,1 delete and demote parent and check up.
+				   if ((parentNode.getLeft() == currNode && leftRankDelta == 1) || (parentNode.getRight() == currNode && rightRankDelta == 1)) { // Current node is
+					   
+					   this.deletionNode(currNode); // Deletion
+					   
+					   parentNode.setHeight(parentNode.getHeight() - 1); // Demoting parent
+					   
+					   // Rebalancing
+					   currNode = parentNode;
+					   while (currNode != this.rootNode) {
+						   total += deletionRebalance(currNode);
+						   currNode = currNode.getParent();
+					   }
+					   return total;
+				   }
+				   else if ((parentNode.getLeft() == currNode && leftRankDelta == 2) || (parentNode.getRight() == currNode && rightRankDelta == 2)) {
+					   // Cases of (3,1) and (1,3) Needs implementing
+				   }
+			   }
+		   }
+	   }   
    }
+   private void deletionNode(IAVLNode currNode) {
+	   if (currNode == this.rootNode) {
+		   this.rootNode = VIRTUAL_NODE;
+		   return;
+	   }
+	   IAVLNode parentNode = currNode.getParent();
+	   if (parentNode.getLeft() == currNode) { // Current node is the left child
+		   parentNode.setLeft(VIRTUAL_NODE);
+	   }
+	   else { // Current node is right child
+		   parentNode.setRight(VIRTUAL_NODE);
+	   }
+   }
+   private int deletionRebalance(IAVLNode currNode) {
+	   // Needs Implementing
+	   return 0;
+   }
+	  
+   
+   
 
+   private IAVLNode searchNode(int k) {
+	   IAVLNode currNode = this.rootNode;
+	   while (currNode.isRealNode()) {
+		   if (currNode.getKey() == k) {
+			   return currNode;
+		   }
+		   if (k < currNode.getKey()) {
+			   currNode = currNode.getLeft();
+		   }
+		   else {
+			   currNode = currNode.getRight();
+		   }
+	   }
+	   return currNode;
+   }
+   
    /**
     * public String min()
     *
