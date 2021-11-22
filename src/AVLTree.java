@@ -296,18 +296,13 @@ public class AVLTree {
 	      z.setSubTreeSize(zTempSize - a.getSubTreeSize());
 	      x.setSubTreeSize(zTempSize); 
 	  }
-   public static boolean isRightSon(IAVLNode son){
-       return son.getParent().getRight().getKey() == son.getKey(); 
+   
+   public static boolean isRightSon(IAVLNode node){
+       return node.getParent().getRight().getKey() == node.getKey(); 
        }
    
-   public void rotateLeft(IAVLNode y, IAVLNode x) {
-	    IAVLNode yPrevLeftChildNode = y.getLeft();
-	    y.setLeft(x);
-	    x.setRight(yPrevLeftChildNode);
-	    y.setParent(x.getParent());
-	    x.setParent(y);
-	    yPrevLeftChildNode.setParent(x);
-  }
+   
+   
    
    public boolean isRoot(IAVLNode node){
 	       return node.getKey() == this.rootNode.getKey();
