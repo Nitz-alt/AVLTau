@@ -103,33 +103,67 @@ public class AVLTree {
    public int insertByCase(IAVLNode posNode, IAVLNode newNode) {
 	   int numOps = 0;
 	   if (newNode.getKey() > posNode.getKey()) {
-		   numOps = rightInsert(IAVLNode posNode, IAVLNode newNode);
+		   numOps = rightInsert(posNode, newNode);
 	   }
 	   else {
-		   numOps = leftInsert(IAVLNode posNode, IAVLNode newNode);
+		   numOps = leftInsert(posNode, newNode);
 	   }
 	   return numOps;
    }
+   
+   
+private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
+	return 0;
+}
+
 // Determines case of insertion for right side insertion  
-  public int rightInsert(IAVLNode posNode, IAVLNode newNode) {
+  public int rightInsert(IAVLNode posNode, IAVLNode insertNode) {
 	  int numOps = 0;
-	  // parent is Unary node
-	  if(posNode.getRight() == VIRTUAL_NODE && posNode.getLeft().getHeight() == 0) {
-		  numOps = unaryInsert(IAVLNode posNode, IAVLNode newNode);
-	  }
+	  posNode.setRight(insertNode);
+	  insertNode.setParent(posNode);
   }
   
-  public int unaryNodeInsert(IAVLNode posNode, IAVLNode newNode) {
-	  posNode.setRight(newNode);
-	  newNode.setHeight(0);
-	  posNode.setHeight(1);
-	  newNode.setParent(posNode);
-	  newNode.setLeft(VIRTUAL_NODE);
-	  newNode.setRight(VIRTUAL_NODE);
-	  
-	  
-  }
-   
+ 
+  public int rebalancePostInsert (IAVLNode insertNode){
+      IAVLNode currNode = insertNode;
+      int numOps = 0;
+      int currOpsNum = 0;
+      
+      //Traverse the tree until you get to the top
+      while(!isRoot(currNode)){ 
+    	  //Child and parent are of the same height
+          if (currNode.getHeight() == currNode.getParent().getHeight()){
+             numOps += this.rotateIndex(currNode); 
+             //Rotations finalized, no need for promote
+              if (currOpsNum > 0){ 
+                  this.updateSizeOfSubTreeInsert(insertNode);
+                  return numOps;
+              }
+              // Rotation has not happened yet, time to promote. 
+              else {
+            	  //Promote operation
+                  currNode.getParent().setHeight(currNode.getHeight()+1);
+                  numOps++;
+                  currNode = currNode.getParent();
+              }
+          }
+          
+          //Problem did not go up the tree
+          else if (currNode.getParent().getHeight() > insertNode.getHeight()){
+              this.updateSizeOfSubTreeInsert(insertNode);
+              return numberOfOperations;
+          }
+      }
+      //from here it's taking care of the root maybe it's son was promoted and now rankDif = 0
+      if(rankDif(curr.getLeftGood(),curr) == 0 && rankDif(curr.getRightGood(),curr) == 2){
+          numberOfOperations += rotate(curr.getLeftGood());
+      }
+      else if (rankDif(curr.getLeftGood(),curr) == 2 && rankDif(curr.getRightGood(),curr) == 0){
+          numberOfOperations += rotate(curr.getRightGood());
+      }
+      this.updateSizeOfSubTreeInsert(newNode);
+      return numberOfOperations;
+  }  
   
   
   /**
@@ -266,7 +300,6 @@ public class AVLTree {
        z.setParent(x);
        z.setLeft(b);
        b.setParent(z);
-       z.setHeight(z.getHeight()-1);
        int zTempSize = z.getSubTreeSize();
        z.setSubTreeSize(zTempSize - a.getSubTreeSize());
        x.setSubTreeSize(zTempSize);
@@ -291,7 +324,6 @@ public class AVLTree {
 	      z.setParent(x);;
 	      z.setRight(b);
 	      b.setParent(z);
-	      z.setHeight(z.getHeight()-1);
 	      int zTempSize = z.getSubTreeSize();
 	      z.setSubTreeSize(zTempSize - a.getSubTreeSize());
 	      x.setSubTreeSize(zTempSize); 
