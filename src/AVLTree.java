@@ -97,14 +97,13 @@ public class AVLTree {
 					   
 					   // Rebalancing
 					   currNode = parentNode;
-					   while (currNode != this.rootNode) {
-						   total += deletionRebalance(currNode);
-						   currNode = currNode.getParent();
-					   }
-					   return total;
+					   return deletionRebalance(currNode); // The can now only be in the parent (of the parent) rebalance needs to be with a loop
 				   }
 				   else if ((parentNode.getLeft() == currNode && leftRankDelta == 2) || (parentNode.getRight() == currNode && rightRankDelta == 2)) {
-					   // Cases of (3,1) and (1,3) Needs implementing
+					   // Cases of (3,1) and (1,3)
+					   this.deletionNode(currNode); // Deletion
+					   // Now the junction is at state (3,1) or (1,3)
+					   
 				   }
 			   }
 		   }
