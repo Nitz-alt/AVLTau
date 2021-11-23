@@ -7,8 +7,8 @@
  *
  */
 
-public class AVLTree {
-	final IAVLNode VIRTUAL_NODE = new AVLNode();
+public class AVLTree{
+	public final IAVLNode VIRTUAL_NODE = new AVLNode();
 	private IAVLNode rootNode = VIRTUAL_NODE;
 	private IAVLNode minNode;
 	private IAVLNode maxNode;
@@ -48,7 +48,8 @@ public class AVLTree {
   // Looks for key in the subtree of node. If it is found, return it. Else, returns the last node encountered 
   public IAVLNode treePosition(IAVLNode node, int key) {
 	  IAVLNode tempNode = node;
-	  while(node != null) {
+	 	  
+	  while(node != VIRTUAL_NODE) {
 		  tempNode = node; 
 		  if(key == node.getKey()) {
 			  return tempNode;
@@ -72,15 +73,16 @@ public class AVLTree {
    * A promotion/rotation counts as one re-balance operation, double-rotation is counted as 2.
    * Returns -1 if an item with key k already exists in the tree.
    */
+  
    public int insert(int k, String i) {
-	   int numOfOps = 0;
 	   IAVLNode searchNodeResult = treePosition(rootNode, k);
-	   IAVLNode inNode = new AVLNode(k,i);
+	   IAVLNode inNode = new AVLNode(k, i, /* parent */ null, /* left */ VIRTUAL_NODE, /* right */ VIRTUAL_NODE, /* height */ 0);
 	   // If tree is empty, insert node in the root.
-	   if(searchNodeResult == null) { 
-		  this.rootNode = new AVLNode(k,i,null, VIRTUAL_NODE,VIRTUAL_NODE,0);
+	   if(searchNodeResult == VIRTUAL_NODE) { 
+		  this.rootNode = inNode;
 		  this.maxNode = rootNode;
 		  this.minNode = rootNode;
+		  rootNode.setSubTreeSize(1);
 		  return 0;
 	   }
 	   // If node is found in the tree, we do nothing, num of operations has not changed.
@@ -96,77 +98,111 @@ public class AVLTree {
 			   maxNode = inNode;
 		   }   
 	   }
-		 insertByCase(searchNodeResult,inNode);
-	   }
-   
-   //Determines side of insertion
-   public int insertByCase(IAVLNode posNode, IAVLNode newNode) {
-	   int numOps = 0;
-	   if (newNode.getKey() > posNode.getKey()) {
-		   numOps = rightInsert(posNode, newNode);
+	   //New node should go on the left of search node
+	   if (inNode.getKey() < searchNodeResult.getKey()) {
+		   searchNodeResult.setLeft(inNode);
+		   inNode.setParent(searchNodeResult);
+		   inNode.setHeight(0);
 	   }
 	   else {
-		   numOps = leftInsert(posNode, newNode);
+		   searchNodeResult.setRight(inNode);
+		   inNode.setParent(searchNodeResult); 
+		   inNode.setHeight(0);
 	   }
-	   return numOps;
-   }
+	   inNode.setSubTreeSize(1);
+	   return rebalancePostInsert(inNode);
+   	}
    
-   
-private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
-	return 0;
-}
-
-// Determines case of insertion for right side insertion  
-  public int rightInsert(IAVLNode posNode, IAVLNode insertNode) {
-	  int numOps = 0;
-	  posNode.setRight(insertNode);
-	  insertNode.setParent(posNode);
-  }
   
  
-  public int rebalancePostInsert (IAVLNode insertNode){
-      IAVLNode currNode = insertNode;
+  public int rebalancePostInsert(IAVLNode insertNode){
+      IAVLNode x = insertNode;
+      IAVLNode topAfterActioNode = insertNode;
       int numOps = 0;
-      int currOpsNum = 0;
-      
       //Traverse the tree until you get to the top
-      while(!isRoot(currNode)){ 
-    	  //Child and parent are of the same height
-          if (currNode.getHeight() == currNode.getParent().getHeight()){
-             numOps += this.rotateIndex(currNode); 
-             //Rotations finalized, no need for promote
-              if (currOpsNum > 0){ 
-                  this.updateSizeOfSubTreeInsert(insertNode);
-                  return numOps;
-              }
-              // Rotation has not happened yet, time to promote. 
-              else {
-            	  //Promote operation
-                  currNode.getParent().setHeight(currNode.getHeight()+1);
-                  numOps++;
-                  currNode = currNode.getParent();
-              }
-          }
+      while(!isRoot(x)){
+    	  IAVLNode z = x.getParent();
+    	  //Child and parent are of the same height - promote or rotate
+          if (x.getHeight() == z.getHeight()){
+        	  if (z.getLeft() ==x) { // x is left child
+        		  IAVLNode y = z.getRight();
+				int rankDifZY = z.getHeight() - y.getHeight();
+				if(rankDifZY == 1) {//Promote
+					z.setHeight(z.getHeight() + 1);
+					z.setSubTreeSize(z.getSubTreeSize() + 1);
+					x = z;
+					numOps++;
+					topAfterActioNode = z;
+					continue;
+				}
+				else if(rankDifZY == 2) { //Rotate(single or double) 
+					IAVLNode b = x.getRight();
+					IAVLNode a = x.getLeft();
+					int rankDifXA = x.getHeight() - a.getHeight();
+					int rankDifXB = x.getHeight() - b.getHeight();
+					if(rankDifXA == 1 && rankDifXB == 2) {//rotate single right
+						rotateRight(x);
+						z.setHeight(z.getHeight() - 1);
+						topAfterActioNode = x;
+						z.setSubTreeSize(b.getSubTreeSize() + y.getSubTreeSize() + 1);
+						x.setSubTreeSize(z.getSubTreeSize() + a.getSubTreeSize() + 1);
+						numOps++; 
+						break;
+					}
+					else if(rankDifXA == 2 && rankDifXB == 1) {//double rotate right
+						System.out.println("drr");
+						topAfterActioNode = b;
+						  break;
+					}	
+				}//(rankDifZY == 2)
+        	  }// x is right child cases
+        	  if(z.getRight() == x) {
+        		  IAVLNode y = z.getLeft();
+  				  int rankDifZY = z.getHeight() - y.getHeight();
+  				  if(rankDifZY == 1) {//Promote
+					z.setHeight(z.getHeight() + 1);
+					z.setSubTreeSize(z.getSubTreeSize() + 1);
+					x = z;
+					numOps++;
+					topAfterActioNode = z;
+					continue;
+				}
+  				  else if(rankDifZY == 2) {//single or double rotation left
+	        		  IAVLNode a = x.getRight();
+	        		  IAVLNode b = x.getLeft();
+	        		  int rankDifXA = x.getHeight() - a.getHeight();
+					  int rankDifXB = x.getHeight() - b.getHeight();
+					  if(rankDifXA == 1 && rankDifXB == 2) {//rotate single left
+						  rotateLeft(x);
+						  z.setHeight(z.getHeight() - 1);
+						  z.setSubTreeSize(b.getSubTreeSize() + y.getSubTreeSize() + 1);
+						  x.setSubTreeSize(z.getSubTreeSize() + a.getSubTreeSize() + 1);
+						  numOps++;
+						  topAfterActioNode = x;
+						  break;
+					  }
+					  if(rankDifXA ==2 && rankDifXB == 1) {
+							System.out.println("drl");
+							topAfterActioNode = b;
+							  break;
+					  }
+	        	  }
+        	  }
           
-          //Problem did not go up the tree
-          else if (currNode.getParent().getHeight() > insertNode.getHeight()){
-              this.updateSizeOfSubTreeInsert(insertNode);
-              return numberOfOperations;
-          }
-      }
-      //from here it's taking care of the root maybe it's son was promoted and now rankDif = 0
-      if(rankDif(curr.getLeftGood(),curr) == 0 && rankDif(curr.getRightGood(),curr) == 2){
-          numberOfOperations += rotate(curr.getLeftGood());
-      }
-      else if (rankDif(curr.getLeftGood(),curr) == 2 && rankDif(curr.getRightGood(),curr) == 0){
-          numberOfOperations += rotate(curr.getRightGood());
-      }
-      this.updateSizeOfSubTreeInsert(newNode);
-      return numberOfOperations;
+          }// 
+          }//while
+      topAfterActioNode.increaseSizeOfSubTreeOfAllParents();
+      return numOps;
   }  
   
   
-  /**
+ 
+
+public int handleByCase(AVLTree.IAVLNode currNode) {
+	return 0;
+}
+
+/**
    * public int delete(int k)
    *
    * Deletes an item with key k from the binary tree, if it is there.
@@ -189,12 +225,6 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
    public String min()
    {
 	   return this.minNode.getValue(); 
-	   /**IAVLNode currNode = this.rootNode;
-	   while(currNode.getLeft().isRealNode()) {
-		   currNode= currNode.getLeft();
-	   }
-	   return currNode.getValue();
-	   */
    }
    
 
@@ -240,7 +270,7 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
     */
    public int size()
    {
-	return rootNode.subTreeSize();	   
+	return rootNode.getSubTreeSize();	   
    }
    
    /**
@@ -250,7 +280,7 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
     */
    public IAVLNode getRoot()
    {
-	   return null;
+	   return this.rootNode;
    }
    
    /**
@@ -355,7 +385,9 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
 		public boolean isRealNode(); // Returns True if this is a non-virtual AVL node.
     	public void setHeight(int height); // Sets the height of the node.
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
-    	public int subTreeSize();
+
+    	//
+    	public void increaseSizeOfSubTreeOfAllParents();
     	public void setSubTreeSize(int size);
     	public int getSubTreeSize();
 	}
@@ -381,7 +413,6 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
 	  	public AVLNode(int key, String value) {
 	  		this.key = key;
 	  		this.value = value;
-	  		this.subTreeSize = subTreeSize();
 	  		
 	  	}
 	  	
@@ -392,7 +423,6 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
 	  		this.parentNode = (AVLTree.AVLNode) parentNode;
 	  		this.leftSonNode = (AVLTree.AVLNode) left;
 	  		this.rightSonNode = (AVLTree.AVLNode) right;
-	  		this.subTreeSize = subTreeSize();
 	  		
 	  	}
 	  	
@@ -462,14 +492,13 @@ private int leftInsert(AVLTree.IAVLNode posNode, AVLTree.IAVLNode newNode) {
 			return false;
 		}
 		
-		public int subTreeSize() {
-			if (!this.isRealNode()) {
-				return 0;
+		public void increaseSizeOfSubTreeOfAllParents() {
+			IAVLNode tempNode = this.getParent();
+			//Continue until reaching the root, updating all the way up
+			while(tempNode != null) {
+				tempNode.setSubTreeSize(tempNode.getSubTreeSize() + 1);
+				tempNode = tempNode.getParent();
 			}
-			if(this.isLeaf()) {
-				return 1;
-			}
-			return this.getLeft().subTreeSize() + this.getRight().subTreeSize() + 1;
 		}
 		
 		public void setSubTreeSize(int size) {
