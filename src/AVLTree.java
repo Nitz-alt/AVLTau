@@ -160,6 +160,7 @@ public class AVLTree {
 	   while(nextNode != VIRTUAL_NODE) {
 		   curr = nextNode;
 		   nextNode = curr.getLeft();
+
 	   }
 	   return curr;
    }
