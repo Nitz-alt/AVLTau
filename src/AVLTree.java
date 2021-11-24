@@ -69,7 +69,7 @@ public class AVLTree {
    */
    public int delete(int k)
    {
-	      
+	      return deleteWithNode(k, null);
    }
    
    private int deleteWithNode(int k, IAVLNode curr) {
@@ -119,7 +119,7 @@ public class AVLTree {
 		   }
 		   else if(leftChildNode.isRealNode() && rightChildNode.isRealNode()) { // Binary node - Deleting the predecessor.
 			   // Finding predecessor
-			   IAVLNode currSuccessor = successor(currNode);
+			   IAVLNode currSuccessor = this.successor(currNode);
 			   total += deleteWithNode(k, currSuccessor); // Deleting successor
 			   // Switching between successor and node to be deleted
 			   currSuccessor.setLeft(currNode.getLeft());
@@ -135,32 +135,36 @@ public class AVLTree {
 			   return total;
 		   }
 		   // Only deletion end
-		   // Balancing
-		   // currNode is deleted should not be used here in any case;
-		   int leftRankDelta = parentNode.getHeight() - leftChildNode.getHeight();
-		   int rightRankDelta = parentNode.getHeight() - rightChildNode.getHeight();
-		   if ((leftRankDelta == 2 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 2)) { // (1,2) or (2,1) is ok
-			   return 0;
-		   }
-		   if (leftRankDelta == 2 && rightRankDelta == 2) { // Demoting parent and balancing up;
-			   parentNode.setHeight(parentNode.getHeight()-1);
-			   rebalancing(parentNode.getParent());
-		   }
-		   if ((leftRankDelta == 3 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 3)) { // Junction is (3,1) or (1,3)
-			   if (leftRankDelta == 3) { // Rank delta is 3 on left side - rotate
-				   
-			   }
-		   }
-		   
-		   
+		   return rebalancing(currNode.getParent());
 	   }
+	   
+	   return 0; // What happens when we delete the root ????
    }
    
    
    
-   private static IAVLNode successor(IAVLNode curr) {
+   private IAVLNode successor(IAVLNode curr) {
+	   if (curr.getRight() != VIRTUAL_NODE) {
+		   return this.minNode(curr.getRight());
+	   }
+	   IAVLNode succNode = curr.getParent();
+	   while (succNode != null && curr == succNode.getRight()) {
+		   curr = succNode;
+		   succNode = curr.getParent();
+	   }
+	   return succNode;
+   }
+   
+   private IAVLNode minNode(IAVLNode curr) {
+	   IAVLNode nextNode = curr.getLeft();
+	   while(nextNode != VIRTUAL_NODE) {
+		   curr = nextNode;
+		   nextNode = curr.getLeft();
+	   }
 	   return curr;
    }
+   
+   
    
    private int rebalancing(IAVLNode curr) { // Gets the parent of the junction
 	   int total = 0;
