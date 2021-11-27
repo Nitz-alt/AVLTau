@@ -1,3 +1,5 @@
+import java.util.Currency;
+
 /**
  *
  * AVLTree
@@ -151,8 +153,8 @@ public class AVLTree{
 					}
 					else if(rankDifXA == 2 && rankDifXB == 1) {//double rotate right
 						System.out.println("drr");
-						rotateLeft(x);
-						rotateRight(z);
+						rotateLeft(b);
+						rotateRight(b);
 						x.setHeight(x.getHeight() - 1);
 						z.setHeight(z.getHeight() - 1);
 						b.setHeight(b.getHeight() + 1);
@@ -189,8 +191,8 @@ public class AVLTree{
 					  }
 					  if(rankDifXA ==2 && rankDifXB == 1) {
 							System.out.println("drl");
-							rotateRight(x);
-							rotateLeft(z);
+							rotateRight(b);
+							rotateLeft(b);
 							x.setHeight(x.getHeight() - 1);
 							z.setHeight(z.getHeight() - 1);
 							b.setHeight(b.getHeight() + 1);
@@ -258,13 +260,13 @@ public class AVLTree{
 	  if(this.empty()) {
 		  return new int[0];
 	  }
-	  int numOfNodes = rootNode.getSubTreeSize()
+	  int numOfNodes = rootNode.getSubTreeSize();
       int[] keysArray = new int[numOfNodes];
       IAVLNode minimalNode = this.minNode;
       IAVLNode currNode = minimalNode;
-      for (int i = 0; i < numOfNodes; i++){
+      for (int i = 0; i < numOfNodes; i++){// This is O(n), proved in recitation
           keysArray[i] = currNode.getKey();
-          currNode = succesor(currNode);
+          //currNode = succesor(currNode);
       }
       return keysArray;
 
@@ -281,7 +283,18 @@ public class AVLTree{
    */
   public String[] infoToArray()
   {
-        return new String[55]; // to be replaced by student code
+	  if(this.empty()) {
+		  return new String[0];
+	  }
+	  int numOfNodes = rootNode.getSubTreeSize();
+      String[] infoArray = new String[numOfNodes];
+      IAVLNode minimalNode = this.minNode;
+      IAVLNode currNode = minimalNode;
+      for (int i = 0; i < numOfNodes; i++){// This is O(n), proved in recitation
+          infoArray[i] = currNode.getValue();
+          //currNode = succesor(currNode);
+      }
+      return infoArray;
   }
 
    /**
@@ -315,7 +328,23 @@ public class AVLTree{
     */   
    public AVLTree[] split(int x)
    {
-	   return null; 
+	   AVLTree smallerThanXAvlTree = new AVLTree();
+	   AVLTree greaterThanXAvlTree = new AVLTree();
+	   String valString = search(x);
+	   IAVLNode searchNode = new AVLNode(x, valString);
+	   IAVLNode currNode = treePosition(searchNode,x);
+	   while(currNode != null) {
+		   if(currNode.getParent() != null)//We did not reach the root yet
+			   if(currNode.getLeft() != null)
+				   
+			   
+			   
+			   
+		   }
+		   
+		   
+	   }
+	   
    }
    
    /**
