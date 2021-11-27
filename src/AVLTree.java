@@ -1,5 +1,3 @@
-import java.util.Currency;
-
 /**
  *
  * AVLTree
@@ -12,8 +10,8 @@ import java.util.Currency;
 public class AVLTree{
 	public final IAVLNode VIRTUAL_NODE = new AVLNode();
 	private IAVLNode rootNode = VIRTUAL_NODE;
-	private IAVLNode minNode;
-	private IAVLNode maxNode;
+	private IAVLNode minNode = VIRTUAL_NODE;
+	private IAVLNode maxNode = VIRTUAL_NODE;
   /**
    * public boolean empty()
    *
@@ -329,6 +327,7 @@ public class AVLTree{
 		   IAVLNode rightchildNode = curr.getRight();
 		   int leftRankDelta = curr.getHeight() - leftChildNode.getHeight();
 		   int rightRankDelta = curr.getHeight() - rightchildNode.getHeight();
+		   System.out.println(leftRankDelta + " " + rightRankDelta);
 		   if ((leftRankDelta == 2 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 2)) { // (1,2) or (2,1) is ok
 			   return total; // Nothing done price is 0
 		   }
@@ -343,13 +342,13 @@ public class AVLTree{
 				   int rightChildLeftRankDelta = curr.getRight().getHeight() - curr.getRight().getLeft().getHeight();
 				   int rightChildRightRankDelta = curr.getRight().getHeight() - curr.getRight().getRight().getHeight();
 				   if (rightChildLeftRankDelta == 1 && rightChildRightRankDelta == 1) { // Right child is a (1,1) junction.
-					   rotateLeft(curr, rightchildNode);
+					   rotateLeft(curr); //, rightchildNode
 					   curr.setHeight(curr.getHeight() - 1); // Demoting the (prev) parent
 					   rightchildNode.setHeight(rightchildNode.getHeight() + 1); // Promoting right child (who is now the parent)
 					   return total + (1 + 2); // One rotation and 2 promotes/demotes (Parent should be at same height)
 				   }
 				   else if(rightChildLeftRankDelta == 2 && rightChildRightRankDelta == 1) { // Right child is a (2,1) junction.
-					   rotateLeft(curr, curr.getRight());
+					   rotateLeft(curr); // , curr.getRight()
 					   curr.setHeight(curr.getHeight() - 2);
 					   total += 3;
 					   curr = parentNode;
@@ -357,8 +356,8 @@ public class AVLTree{
 				   else if(rightChildLeftRankDelta == 1 && rightChildRightRankDelta == 2) { // Right child is a (1,2) junction
 					   // Double rotation
 					   IAVLNode prevRightChildLeft = rightchildNode.getLeft();
-					   rotateRight(prevRightChildLeft, rightchildNode);
-					   rotateRight(curr.getRight(), curr);
+					   rotateRight(prevRightChildLeft); //, rightchildNode
+					   rotateRight(curr.getRight()); //, curr
 					   prevRightChildLeft.setHeight(prevRightChildLeft.getHeight() + 1);
 					   rightchildNode.setHeight(rightchildNode.getHeight() - 1);
 					   total += 4;
@@ -369,13 +368,13 @@ public class AVLTree{
 				   int leftChildRightRankDelta = curr.getLeft().getHeight() - curr.getLeft().getRight().getHeight();
 				   int leftChildLeftRankDelta = curr.getLeft().getHeight() - curr.getLeft().getLeft().getHeight();
 				   if (leftChildRightRankDelta == 1 && leftChildLeftRankDelta == 1) { // Left child is a (1,1) junction -- symterical
-					   rotateRight(curr, leftChildNode);
+					   rotateRight(curr); // , leftChildNode
 					   curr.setHeight(curr.getHeight() - 1); // Demoting the (prev) parent
 					   leftChildNode.setHeight(leftChildNode.getHeight() + 1); // Promoting left child (who is now the parent)
 					   return total + (1 + 2); // One rotation and 2 promotes/demotes (Parent should be at same height);
 				   }
 				   else if (leftChildRightRankDelta == 2 && leftChildLeftRankDelta == 1) { // Left child is a (1,2) junction
-					   rotateRight(curr, curr.getLeft());
+					   rotateRight(curr); //, curr.getLeft()
 					   curr.setHeight(curr.getHeight() - 2);
 					   total += 3;
 					   curr = parentNode;
@@ -383,8 +382,8 @@ public class AVLTree{
 				   else if (leftChildRightRankDelta == 1 && leftChildLeftRankDelta == 2) { // Left child is a (2,1) junction
 					   // Double rotation
 					   IAVLNode prevLeftChildRight = leftChildNode.getRight(); // This is going to be the final parent in the junction
-					   rotateLeft(prevLeftChildRight, leftChildNode);
-					   rotateLeft(curr.getLeft(), curr);
+					   rotateLeft(prevLeftChildRight); //, leftChildNode
+					   rotateLeft(curr.getLeft()); // , curr
 					   prevLeftChildRight.setHeight(prevLeftChildRight.getHeight() + 1);
 					   leftChildNode.setHeight(leftChildNode.getHeight() - 1);
 					   total += 4;
@@ -522,7 +521,8 @@ public class AVLTree{
     */   
    public AVLTree[] split(int x)
    {
-	   AVLTree smallerThanXAvlTree = new AVLTree();
+	   return null;
+	   /*AVLTree smallerThanXAvlTree = new AVLTree();
 	   AVLTree greaterThanXAvlTree = new AVLTree();
 	   String valString = search(x);
 	   IAVLNode searchNode = new AVLNode(x, valString);
@@ -530,14 +530,9 @@ public class AVLTree{
 	   while(currNode != null) {
 		   if(currNode.getParent() != null)//We did not reach the root yet
 			   if(currNode.getLeft() != null)
-				   
-			   
-			   
-			   
-		   }
+				   return null;
 		   
-		   
-	   }
+	   }*/
 	   
    }
    
