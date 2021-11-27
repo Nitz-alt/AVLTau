@@ -151,7 +151,13 @@ public class AVLTree{
 					}
 					else if(rankDifXA == 2 && rankDifXB == 1) {//double rotate right
 						System.out.println("drr");
+						rotateLeft(x);
+						rotateRight(z);
+						x.setHeight(x.getHeight() - 1);
+						z.setHeight(z.getHeight() - 1);
+						b.setHeight(b.getHeight() + 1);
 						topAfterActioNode = b;
+						numOps++;
 						  break;
 					}	
 				}//(rankDifZY == 2)
@@ -183,6 +189,12 @@ public class AVLTree{
 					  }
 					  if(rankDifXA ==2 && rankDifXB == 1) {
 							System.out.println("drl");
+							rotateRight(x);
+							rotateLeft(z);
+							x.setHeight(x.getHeight() - 1);
+							z.setHeight(z.getHeight() - 1);
+							b.setHeight(b.getHeight() + 1);
+							numOps++;
 							topAfterActioNode = b;
 							  break;
 					  }
@@ -197,11 +209,6 @@ public class AVLTree{
   
   
  
-
-public int handleByCase(AVLTree.IAVLNode currNode) {
-	return 0;
-}
-
 /**
    * public int delete(int k)
    *
@@ -226,8 +233,8 @@ public int handleByCase(AVLTree.IAVLNode currNode) {
    {
 	   return this.minNode.getValue(); 
    }
-   
-
+    
+    
    /**
     * 
     * public String max()
@@ -248,10 +255,24 @@ public int handleByCase(AVLTree.IAVLNode currNode) {
    */
   public int[] keysToArray()
   {
-        return new int[33]; // to be replaced by student code
+	  if(this.empty()) {
+		  return new int[0];
+	  }
+	  int numOfNodes = rootNode.getSubTreeSize()
+      int[] keysArray = new int[numOfNodes];
+      IAVLNode minimalNode = this.minNode;
+      IAVLNode currNode = minimalNode;
+      for (int i = 0; i < numOfNodes; i++){
+          keysArray[i] = currNode.getKey();
+          currNode = succesor(currNode);
+      }
+      return keysArray;
+
   }
 
-  /**
+ 
+
+/**
    * public String[] infoToArray()
    *
    * Returns an array which contains all info in the tree,
