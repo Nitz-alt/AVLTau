@@ -363,43 +363,94 @@ public class AVLTree{
     */   
    public int join(IAVLNode x, AVLTree t)
    {
+	  int runtime = this.getRoot().getSubTreeSize() - t.getRoot().getSubTreeSize() + 1;
 	  int largerTree = checkWhichIsLarger(this.getRoot().getSubTreeSize(), t.getRoot().getSubTreeSize());
 	  int greaterKeysTree = checkWhichIsLarger(this.getRoot().getKey(), t.getRoot().getKey());
 	  //this object is larger in size
 	  if(largerTree == 2) {
 		 //Check which tree has larger keys
 		  if(greaterKeysTree == 2) {
-			  IAVLNode b = t.getRoot();
-			  while(b.getHeight() > this.getRoot().getHeight()) {
-				  b = b.getLeft();
-			  }
-			  IAVLNode c = b.getParent();
-			  IAVLNode a = this.getRoot();
-			  System.out.println("a ="  + a.getKey() + " b=" + b.getKey() + " c= " + c.getKey() + " x = " + x.getKey());
-			  
-			  c.setLeft(x);
-			  x.setLeft(a);
-			  x.setRight(b);
-			  x.setParent(c);
-			  a.setParent(x);
-			  b.setParent(x);
-			  x.setHeight(this.getRoot().getHeight() + 1);
-			  System.out.println("a ="  + a.getLeft().getKey() + " b=" + b.getLeft().getKey() + " c= " + c.getLeft().getKey() + " x = " + x.getLeft().getKey());
-
-			  IAVLNode newRoot = c;
-			  while(newRoot.getParent() != null) {
-				  newRoot = newRoot.getParent();
-			  }
-			  t.rootNode = newRoot;
-			  this.rootNode = newRoot;
-			  if(x.getHeight() == c.getHeight()) {
-				  rebalancePostInsert(x);
-			  }
-			  x.increaseSizeOfSubTreeOfAllParents();
+			  joinSmallerWithLarger(x,this,t);
+		  }
+		  else { 
+			  joinLargerWithSmaller(x, this, t);
 		  }
 	  }
-	  return 1;
+	  
+	  if(largerTree == 1) {
+		  if(greaterKeysTree == 1) {
+			  joinSmallerWithLarger(x,t,this);
+		  }
+		  else {
+			  joinLargerWithSmaller(x, t, this);
+	  }
+	  }
+	  return Math.abs(runtime);
    }
+  
+   
+   public void joinLargerWithSmaller(IAVLNode x, AVLTree thisTree, AVLTree t) {
+	   IAVLNode b = t.getRoot();
+		  while(b.getHeight() > thisTree.getRoot().getHeight()) {
+			  b = b.getRight();
+		  }
+		  IAVLNode c = b.getParent();
+		  IAVLNode a = thisTree.getRoot();
+		  
+		  c.setRight(x);
+		  x.setRight(a);
+		  x.setLeft(b);
+		  x.setParent(c);
+		  a.setParent(x);
+		  b.setParent(x);
+		  x.setHeight(thisTree.getRoot().getHeight() + 1);
+
+		  IAVLNode newRoot = c;
+		  while(newRoot.getParent() != null) {
+			  newRoot = newRoot.getParent();
+		  }
+		  t.rootNode = newRoot;
+		  thisTree.rootNode = newRoot;
+		  if(x.getHeight() == c.getHeight()) {
+			  rebalancePostInsert(x);
+		  }
+		  x.increaseSizeOfSubTreeOfAllParents();
+	  
+
+}
+
+   
+
+   
+   public void joinSmallerWithLarger(IAVLNode x, AVLTree thisTree, AVLTree t) {
+	   IAVLNode b = t.getRoot();
+		  while(b.getHeight() > thisTree.getRoot().getHeight()) {
+			  b = b.getLeft();
+		  }
+		  IAVLNode c = b.getParent();
+		  IAVLNode a = thisTree.getRoot();
+		  
+		  c.setLeft(x);
+		  x.setLeft(a);
+		  x.setRight(b);
+		  x.setParent(c);
+		  a.setParent(x);
+		  b.setParent(x);
+		  x.setHeight(thisTree.getRoot().getHeight() + 1);
+
+		  IAVLNode newRoot = c;
+		  while(newRoot.getParent() != null) {
+			  newRoot = newRoot.getParent();
+		  }
+		  t.rootNode = newRoot;
+		  thisTree.rootNode = newRoot;
+		  if(x.getHeight() == c.getHeight()) {
+			  rebalancePostInsert(x);
+		  }
+		  x.increaseSizeOfSubTreeOfAllParents();
+	  
+
+}
    
    
    public int checkWhichIsLarger(int x, int y) {
