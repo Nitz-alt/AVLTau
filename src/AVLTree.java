@@ -1,4 +1,5 @@
 import java.util.Currency;
+import java.util.concurrent.locks.Condition;
 
 /**
  *
@@ -10,7 +11,7 @@ import java.util.Currency;
  */
 
 public class AVLTree{
-	public final IAVLNode VIRTUAL_NODE = new AVLNode();
+	public final static IAVLNode VIRTUAL_NODE = (new AVLTree()).new AVLNode();
 	private IAVLNode rootNode = VIRTUAL_NODE;
 	private IAVLNode minNode;
 	private IAVLNode maxNode;
@@ -152,7 +153,6 @@ public class AVLTree{
 						break;
 					}
 					else if(rankDifXA == 2 && rankDifXB == 1) {//double rotate right
-						System.out.println("drr");
 						rotateLeft(b);
 						rotateRight(b);
 						x.setHeight(x.getHeight() - 1);
@@ -193,7 +193,6 @@ public class AVLTree{
 						  break;
 					  }
 					  if(rankDifXA ==2 && rankDifXB == 1) {
-							System.out.println("drl");
 							rotateRight(b);
 							rotateLeft(b);
 							x.setHeight(x.getHeight() - 1);
@@ -364,34 +363,52 @@ public class AVLTree{
     */   
    public int join(IAVLNode x, AVLTree t)
    {
-	   //t tree is the larger of the two
-	  if(t.getRoot().getSubTreeSize() > this.getRoot().getSubTreeSize()) {
-		 IAVLNode b = t.getRoot();
-		 while(b.getHeight() != -1) {
-			 //We arrived to a node with the same rank as x, join the two
-			 if(b.getHeight() <= this.getRoot().getHeight()) {
-				 IAVLNode c = b.getParent();
-				 IAVLNode a = this.getRoot();
-				 c.setLeft(x);
-				 x.setLeft(a);
-				 x.setRight(b);
-				 b.setParent(x);
-				 a.setParent(x);
-				 x.setHeight(this.getRoot().getHeight() + 1);
-				 if(x.getHeight() == c.getHeight()) {
-					 rebalancePostInsert(x);
-				 }
-				 break;
-			 }
-			 else {
-				 b = b.getLeft();
-			 }
-	  }
-	  }
-	 return 0; 
-		  
-   }
+	  int largerTree = checkWhichIsLarger(this.getRoot().getSubTreeSize(), t.getRoot().getSubTreeSize());
+	  int greaterKeysTree = checkWhichIsLarger(this.getRoot().getKey(), t.getRoot().getKey());
+	  //this object is larger in size
+	  if(largerTree == 2) {
+		 //Check which tree has larger keys
+		  if(greaterKeysTree == 2) {
+			  IAVLNode b = t.getRoot();
+			  while(b.getHeight() > this.getRoot().getHeight()) {
+				  b = b.getLeft();
+			  }
+			  IAVLNode c = b.getParent();
+			  IAVLNode a = this.getRoot();
+			  System.out.println("a ="  + a.getKey() + " b=" + b.getKey() + " c= " + c.getKey() + " x = " + x.getKey());
+			  
+			  c.setLeft(x);
+			  x.setLeft(a);
+			  x.setRight(b);
+			  x.setParent(c);
+			  a.setParent(x);
+			  b.setParent(x);
+			  x.setHeight(this.getRoot().getHeight() + 1);
+			  System.out.println("a ="  + a.getLeft().getKey() + " b=" + b.getLeft().getKey() + " c= " + c.getLeft().getKey() + " x = " + x.getLeft().getKey());
 
+			  IAVLNode newRoot = c;
+			  while(newRoot.getParent() != null) {
+				  newRoot = newRoot.getParent();
+			  }
+			  t.rootNode = newRoot;
+			  this.rootNode = newRoot;
+			  if(x.getHeight() == c.getHeight()) {
+				  rebalancePostInsert(x);
+			  }
+			  x.increaseSizeOfSubTreeOfAllParents();
+		  }
+	  }
+	  return 1;
+   }
+   
+   
+   public int checkWhichIsLarger(int x, int y) {
+	   if(x > y)
+		   return 1;
+	   else 
+		return 2;
+   }
+   
    public void rotateRight(IAVLNode x) {
        IAVLNode z = x.getParent();
        IAVLNode b = x.getRight();
