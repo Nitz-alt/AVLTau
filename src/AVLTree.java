@@ -119,17 +119,24 @@ public class AVLTree{
   
  
   public int rebalancePostInsert(IAVLNode insertNode){
+	  
+
       IAVLNode x = insertNode;
       IAVLNode topAfterActioNode = insertNode;
       int numOps = 0;
       //Traverse the tree until you get to the top
       while(!isRoot(x)){
     	  IAVLNode z = x.getParent();
+    	  if (x.getHeight() != z.getHeight()) {
+				x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
+				break;
+    	  } 
     	  //Child and parent are of the same height - promote or rotate
           if (x.getHeight() == z.getHeight()){
         	  if (z.getLeft() ==x) { // x is left child
         		  IAVLNode y = z.getRight();
 				int rankDifZY = z.getHeight() - y.getHeight();
+				int rankDifZX = z.getHeight() - x.getHeight();
 				if(rankDifZY == 1) {//Promote
 					z.setHeight(z.getHeight() + 1);
 					z.setSubTreeSize(z.getSubTreeSize() + 1);
@@ -165,6 +172,7 @@ public class AVLTree{
 						numOps++;
 						  break;
 					}	
+					 
 				}//(rankDifZY == 2)
         	  }// x is right child cases
         	  if(z.getRight() == x) {
@@ -333,22 +341,6 @@ public class AVLTree{
     */   
    public AVLTree[] split(int x)
    {
-//	   AVLTree smallerThanXAvlTree = new AVLTree();
-//	   AVLTree greaterThanXAvlTree = new AVLTree();
-//	   String valString = search(x);
-//	   IAVLNode searchNode = new AVLNode(x, valString);
-//	   IAVLNode currNode = treePosition(searchNode,x);
-//	   while(currNode != null) {
-//		   if(currNode.getParent() != null)//We did not reach the root yet
-//			   if(currNode.getLeft() != null)
-//				   
-//			   
-//			   
-//			   
-//		   }
-//		   
-//		   
-//	   }
 	   return null;
    }
    
