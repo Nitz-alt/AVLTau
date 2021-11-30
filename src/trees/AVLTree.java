@@ -253,7 +253,7 @@ public class AVLTree{
 	   boolean newMax = currNode.getKey() == this.maxNode.getKey();
 	   
 	   
-	   if (currNode == null) return -1; // Key not in tree
+	   if (currNode == null) {return -1;} // Key not in tree
 	   // Only deletion
 	   IAVLNode parentNode = currNode.getParent();
 	   IAVLNode leftChildNode = currNode.getLeft();
@@ -313,6 +313,7 @@ public class AVLTree{
 		   currSuccessor.setRight(currNode.getRight());
 		   currSuccessor.setParent(parentNode);
 		   currSuccessor.setHeight(currNode.getHeight());
+		   currSuccessor.setSubTreeSize(currNode.getSubTreeSize());
 		   currNode.setLeft(null);
 		   currNode.setRight(null);
 		   parentNode = currNode.getParent();
@@ -330,6 +331,15 @@ public class AVLTree{
 		   return total;
 	   }
 	   // Only deletion end
+	   // Fixing sub tree sizes
+	   IAVLNode decreaseNode = parentNode;
+	   while (decreaseNode != null) {
+		   decreaseNode.setSubTreeSize(decreaseNode.getSubTreeSize() - 1);
+		   decreaseNode = decreaseNode.getParent();
+	   }
+	   
+	   
+	   
 	   total += rebalancing(currNode.getParent());
 	   setNewMinAndMax(newMin, newMax);
 	   return total;
@@ -617,6 +627,8 @@ public class AVLTree{
 			   IAVLNode leftSubTreeRoot = currNode.getLeft();
 			   currNode.setParent(null);
 			   currNode.setLeft(END_OF_TREE_NODE);
+			   currNode.setRight(END_OF_TREE_NODE);
+			   currNode.setHeight(0);
 			   leftSubTreeRoot.setParent(null);
 			   AVLTree addToLower = new AVLTree();
 			   addToLower.rootNode = leftSubTreeRoot;
@@ -627,6 +639,8 @@ public class AVLTree{
 			   IAVLNode rightSubTreeRoot = currNode.getRight();
 			   currNode.setParent(null);
 			   currNode.setRight(END_OF_TREE_NODE);
+			   currNode.setLeft(END_OF_TREE_NODE);
+			   currNode.setHeight(0);
 			   rightSubTreeRoot.setParent(null);
 			   AVLTree addToHigher = new AVLTree();
 			   addToHigher.rootNode = rightSubTreeRoot;
@@ -690,7 +704,8 @@ public class AVLTree{
 		  a.setParent(x);
 		  b.setParent(x);
 		  x.setHeight(thisTree.getRoot().getHeight() + 1);
-
+		  x.setSubTreeSize(x.getRight().getSubTreeSize() + x.getLeft().getSubTreeSize() + 1);
+		  
 		  IAVLNode newRoot = c;
 		  while(newRoot.getParent() != null) {
 			  newRoot = newRoot.getParent();
@@ -721,7 +736,8 @@ public class AVLTree{
 		  a.setParent(x);
 		  b.setParent(x);
 		  x.setHeight(thisTree.getRoot().getHeight() + 1);
-
+		  x.setSubTreeSize(x.getRight().getSubTreeSize() + x.getLeft().getSubTreeSize() + 1);
+		  
 		  IAVLNode newRoot = c;
 		  while(newRoot.getParent() != null) {
 			  newRoot = newRoot.getParent();
