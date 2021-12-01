@@ -4,7 +4,7 @@ import trees.TreePrinter.PrintableNode;
  *
  * AVLTree
  *
- * An implementation of a׳� AVL Tree with
+ * An implementation of a׳³ן¿½ AVL Tree with
  * distinct integer keys and info.
  *
  */
@@ -687,7 +687,7 @@ public class AVLTree{
 		  }
 	  }
 	  
-	  if(largerTree == 1) {
+	  else if(largerTree == 1) {
 		  if(greaterKeysTree == 1) {
 			  joinSmallerWithLarger(x,t,this);
 		  }
@@ -695,6 +695,14 @@ public class AVLTree{
 			  joinLargerWithSmaller(x, t, this);
 	  }
 	  }
+	  else {
+		  if(greaterKeysTree == 1) {
+			  joinSameSize(x,t,this); 
+		  }
+		  else {
+			  joinSameSize(x, this, t);
+		  }
+	}
 	  //finding min/max - O(logn)
 	  minNode = findMin(this.getRoot());
 	  maxNode = findMax(this.getRoot());
@@ -718,6 +726,26 @@ public class AVLTree{
 	   return max ;
 	   
    }
+   
+   
+   
+   // thisTree is being set as the one with smaller keys
+   public void joinSameSize(IAVLNode x, AVLTree thisTree, AVLTree t) {
+	   x.setLeft(thisTree.getRoot());
+	   x.setRight(t.getRoot());
+	   x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
+	   x.getRight().setParent(x);
+	   x.getLeft().setParent(x);
+	   x.setHeight(x.getLeft().getHeight() + 1);
+	   thisTree.rootNode = x;
+	   t.rootNode = x;
+   }
+   
+   
+   
+   
+   
+   
    public void joinLargerWithSmaller(IAVLNode x, AVLTree thisTree, AVLTree t) {
 	   int sizeOfThisTree = thisTree.getRoot().getSubTreeSize() + 1;
 	   IAVLNode b = t.getRoot();
@@ -785,8 +813,9 @@ public class AVLTree{
    public int checkWhichIsLarger(int x, int y) {
 	   if(x > y)
 		   return 1;
-	   else 
+	   else if(x< y)
 		return 2;
+	   return -1;
    }
    public void rotateRight(IAVLNode x) {
        IAVLNode z = x.getParent();
