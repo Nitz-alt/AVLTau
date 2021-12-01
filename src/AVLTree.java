@@ -573,7 +573,6 @@ public class AVLTree{
 	   if(t.empty()) {
 		   return this.getRoot().getSubTreeSize();
 	   }
-	  
 	  int runtime = this.getRoot().getSubTreeSize() - t.getRoot().getSubTreeSize() + 1;
 	  int largerTree = checkWhichIsLarger(this.getRoot().getSubTreeSize(), t.getRoot().getSubTreeSize());
 	  int greaterKeysTree = checkWhichIsLarger(this.getRoot().getKey(), t.getRoot().getKey());
@@ -680,8 +679,6 @@ public class AVLTree{
 			  rebalancePostInsert(x);
 		  }
 		  x.increaseSubTreeSizeAfterJoin(sizeOfThisTree);
-	  
-
 }
    
    

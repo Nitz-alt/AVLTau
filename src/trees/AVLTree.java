@@ -1,4 +1,5 @@
 package trees;
+import trees.TreePrinter.PrintableNode;
 /**
  *
  * AVLTree
@@ -240,71 +241,135 @@ public class AVLTree{
 	   int total = 0;
 	   IAVLNode currNode;
 	   if (curr == null) {
-		   currNode = searchNode(k);
+		   currNode = this.searchNode(k);
 	   }
 	   else {
 		   currNode = curr;
 	   }
-	   if (!currNode.isRealNode()) return -1; // Key not in tree
-	   if (currNode != this.rootNode) { // Node is not the root
-		   // Only deletion
-		   IAVLNode parentNode = currNode.getParent();
-		   IAVLNode leftChildNode = currNode.getLeft();
-		   IAVLNode rightChildNode = currNode.getRight();
-		   if (!leftChildNode.isRealNode() && !rightChildNode.isRealNode()) { // Node to be deleted is a leaf
-			   if (parentNode.getLeft() == currNode) { // Deletion - Setting parent child to virutal node
-				   parentNode.setLeft(VIRTUAL_NODE);
+	   boolean newMin = currNode.getKey() == this.minNode.getKey();
+	   boolean newMax = currNode.getKey() == this.maxNode.getKey();
+	   
+	   
+	   if (currNode == null) {return -1;} // Key not in tree
+	   // Only deletion
+	   IAVLNode parentNode = currNode.getParent();
+	   IAVLNode leftChildNode = currNode.getLeft();
+	   IAVLNode rightChildNode = currNode.getRight();
+	   if (!leftChildNode.isRealNode() && !rightChildNode.isRealNode()) { // Node to be deleted is a leaf
+		   if (currNode == this.getRoot()) {
+			   this.rootNode = null;
+			   return 0;
+		   }
+		   if (parentNode.getLeft() == currNode) { // Deletion - Setting parent child to virutal node
+			   parentNode.setLeft(VIRTUAL_NODE);
+		   }
+		   else {
+			   parentNode.setRight(VIRTUAL_NODE);
+		   }
+	   }
+	   else if ((leftChildNode.isRealNode() && !rightChildNode.isRealNode()) || (!leftChildNode.isRealNode() && rightChildNode.isRealNode())) { // Node to be deleted is an unary node.
+		   if (currNode == this.getRoot()) {
+			   if (currNode.getLeft().isRealNode()) { // The root only has a left node
+				   this.rootNode = currNode.getLeft();
+				   currNode.setLeft(null);
+				   this.rootNode.setParent(null);
+				   return 0;
 			   }
-			   else {
-				   parentNode.setRight(VIRTUAL_NODE);
+			   this.rootNode = currNode.getRight();
+			   this.rootNode.setParent(null);
+			   currNode.setLeft(null);
+			   return 0;
+		   }
+		   if (parentNode.getLeft() == currNode) { // Deleted node is a left child
+			   if (leftChildNode.isRealNode()) { // Has left child
+				   parentNode.setLeft(leftChildNode);
+				   leftChildNode.setParent(parentNode);
+			   }
+			   else { // Has right child
+				   parentNode.setLeft(rightChildNode);
+				   rightChildNode.setParent(parentNode);
 			   }
 		   }
-		   else if ((leftChildNode.isRealNode() && !rightChildNode.isRealNode()) || (!leftChildNode.isRealNode() && rightChildNode.isRealNode())) { // Node to be deleted is an unary node.
-			   if (parentNode.getLeft() == currNode) { // Deleted node is a left child
-				   if (leftChildNode.isRealNode()) { // Has left child
-					   parentNode.setLeft(leftChildNode);
-					   leftChildNode.setParent(parentNode);
-				   }
-				   else { // Has right child
-					   parentNode.setLeft(rightChildNode);
-					   rightChildNode.setParent(parentNode);
-				   }
+		   else { // Deleted node is a right child
+			   if (leftChildNode.isRealNode()) { // Has left child
+				   parentNode.setRight(leftChildNode);
+				   leftChildNode.setParent(parentNode);
 			   }
-			   else { // Deleted node is a right child
-				   if (leftChildNode.isRealNode()) { // Has left child
-					   parentNode.setRight(leftChildNode);
-					   leftChildNode.setParent(parentNode);
-				   }
-				   else { // Has right child
-					   parentNode.setRight(rightChildNode);
-					   rightChildNode.setParent(parentNode);
-				   }
+			   else { // Has right child
+				   parentNode.setRight(rightChildNode);
+				   rightChildNode.setParent(parentNode);
 			   }
 		   }
-		   else if(leftChildNode.isRealNode() && rightChildNode.isRealNode()) { // Binary node - Deleting the predecessor.
-			   // Finding predecessor
-			   IAVLNode currSuccessor = this.successor(currNode);
-			   total += deleteWithNode(k, currSuccessor); // Deleting successor
-			   // Switching between successor and node to be deleted
-			   currSuccessor.setLeft(currNode.getLeft());
-			   currSuccessor.setRight(currNode.getRight());
-			   currSuccessor.setParent(parentNode);
-			   currSuccessor.setHeight(currNode.getHeight());
+	   }
+	   else if(leftChildNode.isRealNode() && rightChildNode.isRealNode()) { // Binary node - Deleting the successor.
+		   // Finding successor
+		   IAVLNode currSuccessor = this.successor(currNode);
+		   total += deleteWithNode(k, currSuccessor); // Deleting successor
+		   // Switching between successor and node to be deleted
+		   currSuccessor.setLeft(currNode.getLeft());
+		   currSuccessor.setRight(currNode.getRight());
+		   currSuccessor.setParent(parentNode);
+		   currSuccessor.setHeight(currNode.getHeight());
+		   currSuccessor.setSubTreeSize(currNode.getSubTreeSize());
+		   currNode.setLeft(null);
+		   currNode.setRight(null);
+		   parentNode = currNode.getParent();
+		   if (parentNode == null) {
+			   this.rootNode = currSuccessor;
+		   }
+		   else {
 			   if (parentNode.getLeft() == currNode) { // Deleted node is the left child
 				   parentNode.setLeft(currSuccessor);
 			   }
 			   else { // Deleted node is a right child
 				   parentNode.setRight(currSuccessor);
 			   }
-			   return total;
 		   }
-		   // Only deletion end
-		   return rebalancing(currNode.getParent());
+		   return total;
+	   }
+	   // Only deletion end
+	   // Fixing sub tree sizes
+	   IAVLNode decreaseNode = parentNode;
+	   while (decreaseNode != null) {
+		   decreaseNode.setSubTreeSize(decreaseNode.getSubTreeSize() - 1);
+		   decreaseNode = decreaseNode.getParent();
 	   }
 	   
-	   return 0; // What happens when we delete the root ????
+	   
+	   
+	   total += rebalancing(currNode.getParent());
+	   setNewMinAndMax(newMin, newMax);
+	   return total;
    }
    
+   private void setNewMinAndMax(boolean setMin, boolean setMax) {
+	   if (setMin) {
+		   this.minNode = this.findMinNode();
+	   }
+	   if (setMax) {
+		   this.maxNode = this.findMaxNode();
+	   }
+   }
+   
+   
+   private IAVLNode findMinNode() {
+	   IAVLNode curr = this.getRoot();
+	   IAVLNode nextCurr = curr.getLeft();
+	   while (nextCurr.isRealNode()) {
+		   curr = nextCurr;
+		   nextCurr = curr.getLeft();
+	   }
+	   return curr;
+   }
+   private IAVLNode findMaxNode() {
+	   IAVLNode curr = this.getRoot();
+	   IAVLNode nextCurr = curr.getRight();
+	   while (nextCurr.isRealNode()) {
+		   curr = nextCurr;
+		   nextCurr = curr.getRight();
+	   }
+	   return curr;
+   }
    
    
    private IAVLNode successor(IAVLNode curr) {
@@ -333,14 +398,12 @@ public class AVLTree{
    
    private int rebalancing(IAVLNode curr) { // Gets the parent of the junction
 	   int total = 0;
-	   while (curr != this.rootNode) {
-		   //int parentHeight = curr.getHeight();
+	   while (curr != null) {
 		   IAVLNode parentNode = curr.getParent();
 		   IAVLNode leftChildNode = curr.getLeft();
 		   IAVLNode rightchildNode = curr.getRight();
 		   int leftRankDelta = curr.getHeight() - leftChildNode.getHeight();
 		   int rightRankDelta = curr.getHeight() - rightchildNode.getHeight();
-		   System.out.println(leftRankDelta + " " + rightRankDelta);
 		   if ((leftRankDelta == 2 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 2)) { // (1,2) or (2,1) is ok
 			   return total; // Nothing done price is 0
 		   }
@@ -355,15 +418,15 @@ public class AVLTree{
 				   int rightChildLeftRankDelta = curr.getRight().getHeight() - curr.getRight().getLeft().getHeight();
 				   int rightChildRightRankDelta = curr.getRight().getHeight() - curr.getRight().getRight().getHeight();
 				   if (rightChildLeftRankDelta == 1 && rightChildRightRankDelta == 1) { // Right child is a (1,1) junction.
-					   rotateLeft(curr); //, rightchildNode
+					   rotateLeft(curr.getRight());
 					   curr.setHeight(curr.getHeight() - 1); // Demoting the (prev) parent
 					   rightchildNode.setHeight(rightchildNode.getHeight() + 1); // Promoting right child (who is now the parent)
 					   return total + (1 + 2); // One rotation and 2 promotes/demotes (Parent should be at same height)
 				   }
 				   else if(rightChildLeftRankDelta == 2 && rightChildRightRankDelta == 1) { // Right child is a (2,1) junction.
-					   rotateLeft(curr); // , curr.getRight()
+					   rotateLeft(curr.getRight()); // , curr.getRight()
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += 3;
+					   total += 2;
 					   curr = parentNode;
 				   }
 				   else if(rightChildLeftRankDelta == 1 && rightChildRightRankDelta == 2) { // Right child is a (1,2) junction
@@ -381,15 +444,15 @@ public class AVLTree{
 				   int leftChildRightRankDelta = curr.getLeft().getHeight() - curr.getLeft().getRight().getHeight();
 				   int leftChildLeftRankDelta = curr.getLeft().getHeight() - curr.getLeft().getLeft().getHeight();
 				   if (leftChildRightRankDelta == 1 && leftChildLeftRankDelta == 1) { // Left child is a (1,1) junction -- symterical
-					   rotateRight(curr); // , leftChildNode
+					   rotateRight(curr.getLeft()); // , leftChildNode
 					   curr.setHeight(curr.getHeight() - 1); // Demoting the (prev) parent
 					   leftChildNode.setHeight(leftChildNode.getHeight() + 1); // Promoting left child (who is now the parent)
 					   return total + (1 + 2); // One rotation and 2 promotes/demotes (Parent should be at same height);
 				   }
 				   else if (leftChildRightRankDelta == 2 && leftChildLeftRankDelta == 1) { // Left child is a (1,2) junction
-					   rotateRight(curr); //, curr.getLeft()
+					   rotateRight(curr.getLeft()); //, curr.getLeft()
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += 3;
+					   total += 2;
 					   curr = parentNode;
 				   }
 				   else if (leftChildRightRankDelta == 1 && leftChildLeftRankDelta == 2) { // Left child is a (2,1) junction
@@ -404,11 +467,6 @@ public class AVLTree{
 				   }
 			   }
 		   }
-		   
-		   
-		   
-		   
-		   
 	   }
 	   return total;
 	   
@@ -428,7 +486,7 @@ public class AVLTree{
 			   currNode = currNode.getRight();
 		   }
 	   }
-	   return currNode;
+	   return null;
    }
    
    /**
@@ -472,7 +530,7 @@ public class AVLTree{
       IAVLNode currNode = minimalNode;
       for (int i = 0; i < numOfNodes; i++){// This is O(n), proved in recitation
           keysArray[i] = currNode.getKey();
-          //currNode = succesor(currNode);
+          //currNode = this.successor(currNode);
       }
       return keysArray;
 
@@ -534,18 +592,59 @@ public class AVLTree{
     */   
    public AVLTree[] split(int x)
    {
-	   return null;
-	   /*AVLTree smallerThanXAvlTree = new AVLTree();
-	   AVLTree greaterThanXAvlTree = new AVLTree();
-	   String valString = search(x);
-	   IAVLNode searchNode = new AVLNode(x, valString);
-	   IAVLNode currNode = treePosition(searchNode,x);
-	   while(currNode != null) {
-		   if(currNode.getParent() != null)//We did not reach the root yet
-			   if(currNode.getLeft() != null)
-				   return null;
-		   
-	   }*/
+	   final IAVLNode END_OF_TREE_NODE = VIRTUAL_NODE;
+	   IAVLNode currNode = this.searchNode(x);
+	   if (currNode == null) {return null;};
+	   
+	   AVLTree lowerTree = new AVLTree(); // Lower tree
+	   lowerTree.rootNode = currNode.getLeft();
+	   lowerTree.getRoot().setParent(null); // Detaching child from parent
+	   currNode.setLeft(END_OF_TREE_NODE);
+	   
+	   AVLTree higherTree = new AVLTree(); // Higher tree
+	   higherTree.rootNode = currNode.getRight();
+	   higherTree.getRoot().setParent(null); // Detaching child from parent
+	   currNode.setRight(END_OF_TREE_NODE);
+	   
+	   if (this.getRoot() == currNode) {
+		   return new AVLTree[] {lowerTree, higherTree};
+	   }
+	   boolean currIsLower = currNode.getParent().getRight() == currNode;
+	   currNode = currNode.getParent();
+	   
+	   while (currNode != null) {
+		   IAVLNode nextCurr = currNode.getParent();
+		   boolean nextCurrIsLower = false;
+		   if (nextCurr != null) {
+			   nextCurrIsLower = nextCurr.getRight() == currNode;
+		   }
+		   if (currIsLower) {
+			   IAVLNode leftSubTreeRoot = currNode.getLeft();
+			   currNode.setParent(null);
+			   currNode.setLeft(END_OF_TREE_NODE);
+			   currNode.setRight(END_OF_TREE_NODE);
+			   currNode.setHeight(0);
+			   leftSubTreeRoot.setParent(null);
+			   AVLTree addToLower = new AVLTree();
+			   addToLower.rootNode = leftSubTreeRoot;
+			   lowerTree.join(currNode, addToLower);
+			   
+		   }
+		   else {
+			   IAVLNode rightSubTreeRoot = currNode.getRight();
+			   currNode.setParent(null);
+			   currNode.setRight(END_OF_TREE_NODE);
+			   currNode.setLeft(END_OF_TREE_NODE);
+			   currNode.setHeight(0);
+			   rightSubTreeRoot.setParent(null);
+			   AVLTree addToHigher = new AVLTree();
+			   addToHigher.rootNode = rightSubTreeRoot;
+			   higherTree.join(currNode, addToHigher);
+		   }
+		   currNode = nextCurr;
+		   currIsLower = nextCurrIsLower;
+	   }
+	   return new AVLTree[] {lowerTree, higherTree};
    }
    
    /**
@@ -574,7 +673,6 @@ public class AVLTree{
 	   if(t.empty()) {
 		   return this.getRoot().getSubTreeSize();
 	   }
-	  
 	  int runtime = this.getRoot().getSubTreeSize() - t.getRoot().getSubTreeSize() + 1;
 	  int largerTree = checkWhichIsLarger(this.getRoot().getSubTreeSize(), t.getRoot().getSubTreeSize());
 	  int greaterKeysTree = checkWhichIsLarger(this.getRoot().getKey(), t.getRoot().getKey());
@@ -637,7 +735,6 @@ public class AVLTree{
 		  b.setParent(x);
 		  x.setHeight(thisTree.getRoot().getHeight() + 1);
 		  x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-
 		  IAVLNode newRoot = c;
 		  while(newRoot.getParent() != null) {
 			  newRoot = newRoot.getParent();
@@ -670,7 +767,6 @@ public class AVLTree{
 		  b.setParent(x);
 		  x.setHeight(thisTree.getRoot().getHeight() + 1);
 		  x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-
 		  IAVLNode newRoot = c;
 		  while(newRoot.getParent() != null) {
 			  newRoot = newRoot.getParent();
@@ -754,7 +850,7 @@ public class AVLTree{
 	 * public interface IAVLNode
 	 * ! Do not delete or modify this - otherwise all tests will fail !
 	 */
-	public interface IAVLNode{	
+	public interface IAVLNode extends PrintableNode{	
 		public int getKey(); // Returns node's key (for virtual node return -1).
 		public String getValue(); // Returns node's value [info], for virtual node returns null.
 		public void setLeft(IAVLNode node); // Sets left child.
@@ -890,7 +986,6 @@ public class AVLTree{
 		public int  getSubTreeSize() {
 			return this.subTreeSize;
 		}
-		
 		 public void increaseSubTreeSizeAfterJoin(int n) {
 			   IAVLNode tempNode = this.getParent();
 			   while(tempNode != null) {
@@ -902,5 +997,3 @@ public class AVLTree{
 			} 
 		
   }
-
-  
