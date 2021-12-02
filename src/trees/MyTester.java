@@ -10,20 +10,12 @@ public class MyTester {
 			tree.insert(i, ""+i);
 		}
 		
-		
-		
 		print(tree);
-		AVLTree[] trees = tree.split(4);
-		System.out.println("\n\n***Split at 4***\n\n");
-		print(trees[0]);
-		print(trees[1]);
-		AVLTree factory = new AVLTree();
-		AVLTree.AVLNode node = factory.new AVLNode(4, null);
-		node.setLeft(factory.VIRTUAL_NODE);
-		node.setRight(factory.VIRTUAL_NODE);
-		trees[0].join(node, trees[1]);
-		print(trees[0]);
-		
+		int[] deleteOrder = {4, 5, 2, 6, 3, 7, 1};
+		for (int i : deleteOrder) {
+			tree.delete(i);
+			print(tree);
+		}
 	}
 	
 	
