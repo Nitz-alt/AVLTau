@@ -320,9 +320,6 @@ public class AVLTree{
 		   currSuccessor.setParent(currNode.getParent());
 		   currSuccessor.setHeight(currNode.getHeight());
 		   currSuccessor.setSubTreeSize(currNode.getSubTreeSize());
-		   currNode.setLeft(null); // Detaching old not from the tree
-		   currNode.setRight(null);
-		   currNode.setParent(null);
 		   if (currSuccessor.getRight().isRealNode()) {
 			   currSuccessor.getRight().setParent(currSuccessor);
 		   }
@@ -335,26 +332,30 @@ public class AVLTree{
 			   this.maxNode = currSuccessor;
 		   }
 		   
-		   //parentNode = currNode.getParent();
-		   if (this.getRoot() == currNode) { // Current node was the root
+		   parentNode = currNode.getParent(); // Updating parent after rebalance
+		   if (this.getRoot() == currNode) { // Current node is the root
 			   this.rootNode = currSuccessor;
 		   }
 		   else {
-			   if (parentNode.getLeft() == currNode) { // Deleted node is the left child
+			   if (parentNode.getLeft() == currNode) { // Deleted node is the left child (current isn't the root therefore parent is no null)
 				   parentNode.setLeft(currSuccessor);
 			   }
 			   else { // Deleted node is a right child
 				   parentNode.setRight(currSuccessor);
 			   }
 		   }
+		   
+		   
+		   currNode.setLeft(null); // Nullifying old node fields 
+		   currNode.setRight(null);
+		   currNode.setParent(null);
 		   return total;
 	   }
-	   currNode.setRight(null);
+	   currNode.setRight(null); // Nullifying current node fields
 	   currNode.setLeft(null);
-	   currNode.setParent(null);;
-	   
-	   
+	   currNode.setParent(null);
 	   // Only deletion end
+	   
 	   // Fixing sub tree sizes
 	   IAVLNode decreaseNode = parentNode;
 	   while (decreaseNode != null) {
@@ -364,7 +365,7 @@ public class AVLTree{
 	   
 	   
 	   
-	   total += rebalancing(currNode.getParent());
+	   total += rebalancing(parentNode);
 	   setNewMinAndMax(newMin, newMax);
 	   return total;
    }
