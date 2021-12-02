@@ -425,12 +425,12 @@ public class AVLTree{
 		   if ((leftRankDelta == 2 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 2)) { // (1,2) or (2,1) is ok
 			   return total; // Nothing done price is 0
 		   }
-		   if (leftRankDelta == 2 && rightRankDelta == 2) { // Demoting parent and balancing up;
+		   else if (leftRankDelta == 2 && rightRankDelta == 2) { // Demoting parent and balancing up;
 			   curr.setHeight(curr.getHeight()-1);
 			   curr = parentNode;
 			   total += 1; // Demoting price is 1
 		   }
-		   if ((leftRankDelta == 3 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 3)) { // Junction is (3,1) or (1,3)
+		   else if ((leftRankDelta == 3 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 3)) { // Junction is (3,1) or (1,3)
 			   if (leftRankDelta == 3) { // Rank delta is 3 on left side - rotate
 				   // Parent right child shouldn't be a virtual node
 				   int rightChildLeftRankDelta = curr.getRight().getHeight() - curr.getRight().getLeft().getHeight();
