@@ -530,7 +530,7 @@ public class AVLTree{
       IAVLNode currNode = minimalNode;
       for (int i = 0; i < numOfNodes; i++){// This is O(n), proved in recitation
           keysArray[i] = currNode.getKey();
-          //currNode = this.successor(currNode);
+          currNode = this.successor(currNode);
       }
       return keysArray;
 
@@ -556,7 +556,7 @@ public class AVLTree{
       IAVLNode currNode = minimalNode;
       for (int i = 0; i < numOfNodes; i++){// This is O(n), proved in recitation
           infoArray[i] = currNode.getValue();
-          //currNode = succesor(currNode);
+          currNode = successor(currNode);
       }
       return infoArray;
   }
