@@ -12,9 +12,9 @@ import trees.TreePrinter.PrintableNode;
 
 public class AVLTree{
 	public final static IAVLNode VIRTUAL_NODE = (new AVLTree()).new AVLNode();
-	private IAVLNode rootNode = VIRTUAL_NODE;
-	private IAVLNode minNode = VIRTUAL_NODE;
-	private IAVLNode maxNode = VIRTUAL_NODE;
+	private IAVLNode rootNode;
+	private IAVLNode minNode;
+	private IAVLNode maxNode;
   /**
    * public boolean empty()
    *
@@ -22,7 +22,7 @@ public class AVLTree{
    *
    */
   public boolean empty() {
-    return !this.rootNode.isRealNode();
+    return this.rootNode == null;
   }
 
  /**
@@ -33,6 +33,9 @@ public class AVLTree{
    */
   public String search(int k)
   {
+	  if (this.empty()) {
+		  return null;
+	  }
 	  IAVLNode currNode = this.rootNode;
 	  while (currNode.isRealNode()) {
 		  if (currNode.getKey() == k) {
@@ -50,8 +53,10 @@ public class AVLTree{
   
   // Looks for key in the subtree of node. If it is found, return it. Else, returns the last node encountered 
   public IAVLNode treePosition(IAVLNode node, int key) {
+	  if (this.empty()) {
+		  return null;
+	  }
 	  IAVLNode tempNode = node;
-	 	  
 	  while(node != VIRTUAL_NODE) {
 		  tempNode = node; 
 		  if(key == node.getKey()) {
@@ -78,18 +83,22 @@ public class AVLTree{
    */
   
    public int insert(int k, String i) {
-	   IAVLNode searchNodeResult = treePosition(rootNode, k);
-	   IAVLNode inNode = new AVLNode(k, i, /* parent */ null, /* left */ VIRTUAL_NODE, /* right */ VIRTUAL_NODE, /* height */ 0);
-	   // If tree is empty, insert node in the root.
-	   if(searchNodeResult == VIRTUAL_NODE) { 
-		  this.rootNode = inNode;
+	   //Tree is empty
+	   if(this.empty()) {
+		  this.rootNode = new AVLNode(k, i, null, VIRTUAL_NODE, VIRTUAL_NODE, 0) ;
 		  this.maxNode = rootNode;
 		  this.minNode = rootNode;
 		  rootNode.setSubTreeSize(1);
 		  return 0;
-	   }
+   		}
+	   
+	   
+	   IAVLNode searchNodeResult = treePosition(rootNode, k);
+	   IAVLNode inNode = new AVLNode(k, i, /* parent */ null, /* left */ VIRTUAL_NODE, /* right */ VIRTUAL_NODE, /* height */ 0);
+	   // If tree is empty, insert node in the root.
+	   
 	   // If node is found in the tree, we do nothing, num of operations has not changed.
-	   else if(searchNodeResult.getKey() == k) {
+	   if(searchNodeResult.getKey() == k) {
 		   return -1;
 	   }
 	   // Node isn't in the tree, insertions and modifications are necessary.
@@ -247,20 +256,22 @@ public class AVLTree{
 	   else {
 		   currNode = curr;
 	   }
+	   	   
+	   
+	   if (currNode == null) {return -1;} // Key not in tree
+	   
 	   boolean newMin = currNode.getKey() == this.minNode.getKey();
 	   boolean newMax = currNode.getKey() == this.maxNode.getKey();
 	   
-	   
-	   if (currNode == null) {return -1;} // Key not in tree
 	   // Only deletion
 	   IAVLNode parentNode = currNode.getParent();
 	   IAVLNode leftChildNode = currNode.getLeft();
 	   IAVLNode rightChildNode = currNode.getRight();
 	   if (!leftChildNode.isRealNode() && !rightChildNode.isRealNode()) { // Node to be deleted is a leaf
 		   if (currNode == this.getRoot()) { // The root is a leaf therefore the tree will now be empty
-			   this.rootNode = VIRTUAL_NODE;
-			   this.maxNode = VIRTUAL_NODE;
-			   this.minNode = VIRTUAL_NODE;
+			   this.rootNode = null;
+			   this.maxNode = null;
+			   this.minNode = null;
 			   return 0;
 		   }
 		   if (parentNode.getLeft() == currNode) { // Deletion - Setting parent child to virutal node
@@ -492,6 +503,9 @@ public class AVLTree{
    
    
    private IAVLNode searchNode(int k) {
+	   if (this.empty()) {
+		   return null;
+	   }
 	   IAVLNode currNode = this.rootNode;
 	   while (currNode.isRealNode()) {
 		   if (currNode.getKey() == k) {
@@ -515,6 +529,8 @@ public class AVLTree{
     */
    public String min()
    {
+	   if (this.empty())
+		   return null;
 	   return this.minNode.getValue(); 
    }
     
@@ -528,7 +544,9 @@ public class AVLTree{
     */
    public String max()
    {
-	 return this.maxNode.getValue(); 
+	   if (this.empty())
+		   return null;
+	   return this.maxNode.getValue(); 
    }
 
   /**
@@ -586,7 +604,9 @@ public class AVLTree{
     */
    public int size()
    {
-	return rootNode.getSubTreeSize();	   
+	if (!this.empty())   
+		return rootNode.getSubTreeSize();
+	return 0;
    }
    
    /**
@@ -1033,6 +1053,7 @@ public class AVLTree{
 	   }
 		public String toString() {
 			return "{Key: " + this.getKey() + ", Height: " + this.getHeight() + "}";
+			//return TreePrinter.print(this);
 		}
 	} 
 		

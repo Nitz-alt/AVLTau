@@ -11,7 +11,7 @@ public class MyTester {
 		}
 		
 		print(tree);
-		int[] deleteOrder = {4, 5, 2, 6, 3, 7, 1};
+		int[] deleteOrder = {0, 4, 5, 2, 6, 3, 7, 1};
 		for (int i : deleteOrder) {
 			System.out.println(tree.delete(i));
 			print(tree);
