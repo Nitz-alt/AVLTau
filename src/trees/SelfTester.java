@@ -249,11 +249,10 @@ public class SelfTester {
         int cnt = 0;
         ArrayList<Integer> copy = new ArrayList<>(numToInsert);
         for (int i : numToInsert) {
-            //      System.out.println(i);                                         // if you want to see the number that is being deleted
+                  //System.out.println(i);                                         // if you want to see the number that is being deleted
             testing.delete(i);
             cnt++;
             sizeInCheck--;
-
 
             copy.remove(copy.indexOf(i));
             if (copy.size() > 0){
@@ -324,7 +323,6 @@ public class SelfTester {
             balancedLeft = checkBalanceOfTree(current.getLeft());
             leftHeight = getDepth(current.getLeft());
         }
-
         return balancedLeft && balancedRight && Math.abs(leftHeight - rightHeight) < 2;
     }
 
