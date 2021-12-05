@@ -267,7 +267,6 @@ public class AVLTree{
 	   IAVLNode parentNode = currNode.getParent();
 	   IAVLNode leftChildNode = currNode.getLeft();
 	   IAVLNode rightChildNode = currNode.getRight();
-	   //System.out.println("Junction: %s\n%s %s %s\n%s %s %s".formatted(parentNode, parentNode.getRight(), parentNode.getRight().getLeft(), parentNode.getRight().getRight(), currNode , leftChildNode, rightChildNode));
 	   if (!leftChildNode.isRealNode() && !rightChildNode.isRealNode()) { // Node to be deleted is a leaf
 		   if (currNode == this.getRoot()) { // The root is a leaf therefore the tree will now be empty
 			   this.rootNode = null;
@@ -293,14 +292,6 @@ public class AVLTree{
 			   }
 			   // Root has no parent
 			   this.rootNode.setParent(null);
-			   
-			   // The root is now the only node in the tree therefore is the maximum and the minimum
-			   //this.maxNode = this.getRoot();
-			   //this.minNode = this.getRoot();
-			   
-			   //detachNode(currNode);
-			   
-			   //return 0;
 		   }
 		   else if (parentNode.getLeft() == currNode) { // Deleted node is a left child
 			   if (leftChildNode.isRealNode()) { // Has left child
@@ -358,9 +349,6 @@ public class AVLTree{
 		   detachNode(currNode);
 		   return total;
 	   }
-	   
-	   //System.out.println("Parent junction: %s %s %s".formatted(parentNode, parentNode.getLeft(), parentNode.getRight())
-		//	   + " Current junction: %s %s %s %s".formatted(currNode.getParent() ,currNode, currNode.getLeft(), currNode.getRight()));
 	   detachNode(currNode);
 	   
 	   // Only deletion end
@@ -444,7 +432,6 @@ public class AVLTree{
 		   }
 		   else if (leftRankDelta == 2 && rightRankDelta == 2) { // Demoting parent and balancing up;
 			   curr.setHeight(curr.getHeight()-1);
-			   //curr = parentNode;
 			   total += 1; // Demoting price is 1
 		   }
 		   else if ((leftRankDelta == 3 && rightRankDelta == 1) || (leftRankDelta == 1 && rightRankDelta == 3)) { // Junction is (3,1) or (1,3)
@@ -459,21 +446,19 @@ public class AVLTree{
 					   return total + (1 + 2); // One rotation and 2 promotes/demotes (Parent should be at same height)
 				   }
 				   else if(rightChildLeftRankDelta == 2 && rightChildRightRankDelta == 1) { // Right child is a (2,1) junction.
-					   rotateLeft(curr.getRight()); // , curr.getRight()
+					   rotateLeft(curr.getRight());
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += 2;
-					   //curr = parentNode;
+					   total += (1 + 2); // One rotation and demoting by 2.
 				   }
 				   else if(rightChildLeftRankDelta == 1 && rightChildRightRankDelta == 2) { // Right child is a (1,2) junction
 					   // Double rotation
 					   IAVLNode prevRightChildLeft = rightchildNode.getLeft();
-					   rotateRight(prevRightChildLeft); //, rightchildNode
-					   rotateLeft(prevRightChildLeft); //, curr
+					   rotateRight(prevRightChildLeft);
+					   rotateLeft(prevRightChildLeft);
 					   prevRightChildLeft.setHeight(prevRightChildLeft.getHeight() + 1);
 					   rightchildNode.setHeight(rightchildNode.getHeight() - 1);
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += 4;
-					   //curr = parentNode;
+					   total += (2 + 4); // Double rotation and 4 demotes
 				   }
 			   }
 			   else if (rightRankDelta == 3) { // Symetrical cases
@@ -488,8 +473,7 @@ public class AVLTree{
 				   else if (leftChildRightRankDelta == 2 && leftChildLeftRankDelta == 1) { // Left child is a (1,2) junction
 					   rotateRight(leftChildNode);
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += 2;
-					   //curr = parentNode;
+					   total += (1 + 2); // One rotation and demoting by 2.
 				   }
 				   else if (leftChildRightRankDelta == 1 && leftChildLeftRankDelta == 2) { // Left child is a (2,1) junction
 					   // Double rotation
@@ -499,8 +483,7 @@ public class AVLTree{
 					   prevLeftChildRight.setHeight(prevLeftChildRight.getHeight() + 1);
 					   leftChildNode.setHeight(leftChildNode.getHeight() - 1);
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += 4;
-					   //curr = parentNode;
+					   total += (2 + 4); // One rotation and 4 demotes;
 				   }
 			   }
 		   }
