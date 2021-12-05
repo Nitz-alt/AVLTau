@@ -11,9 +11,9 @@ import trees.TreePrinter.PrintableNode;
 
 public class AVLTree{
 	public final static IAVLNode VIRTUAL_NODE = (new AVLTree()).new AVLNode();
-	private IAVLNode rootNode;
-	private IAVLNode minNode;
-	private IAVLNode maxNode;
+	private IAVLNode rootNode = VIRTUAL_NODE;
+	private IAVLNode minNode = VIRTUAL_NODE;
+	private IAVLNode maxNode = VIRTUAL_NODE;
   /**
    * public boolean empty()
    *
@@ -52,10 +52,8 @@ public class AVLTree{
   
   // Looks for key in the subtree of node. If it is found, return it. Else, returns the last node encountered 
   public IAVLNode treePosition(IAVLNode node, int key) {
-	  if (this.empty()) {
-		  return null;
-	  }
 	  IAVLNode tempNode = node;
+	 	  
 	  while(node != VIRTUAL_NODE) {
 		  tempNode = node; 
 		  if(key == node.getKey()) {
@@ -96,11 +94,6 @@ public class AVLTree{
 		  rootNode.setSubTreeSize(1);
 		  return 0;
    		}
-	   
-	   
-	   IAVLNode searchNodeResult = treePosition(rootNode, k);
-	   IAVLNode inNode = new AVLNode(k, i, /* parent */ null, /* left */ VIRTUAL_NODE, /* right */ VIRTUAL_NODE, /* height */ 0);
-	   // If tree is empty, insert node in the root.
 	   
 	   // If node is found in the tree, we do nothing, num of operations has not changed.
 	   else if(searchNodeResult.getKey() == inNode.getKey()) {
@@ -272,9 +265,9 @@ public class AVLTree{
 	   IAVLNode rightChildNode = currNode.getRight();
 	   if (!leftChildNode.isRealNode() && !rightChildNode.isRealNode()) { // Node to be deleted is a leaf
 		   if (currNode == this.getRoot()) { // The root is a leaf therefore the tree will now be empty
-			   this.rootNode = null;
-			   this.maxNode = null;
-			   this.minNode = null;
+			   this.rootNode = VIRTUAL_NODE;
+			   this.maxNode = VIRTUAL_NODE;
+			   this.minNode = VIRTUAL_NODE;
 			   detachNode(currNode);
 			   return 0;
 		   }
@@ -710,8 +703,8 @@ public class AVLTree{
 	   if(this.empty()) {
 		  t.insert(x);
 		  this.rootNode = t.rootNode;
-		  t.minNode = findMin(t.rootNode);
-		  t.maxNode = findMax(t.rootNode);
+		  t.minNode = findMinNode(t.rootNode);
+		  t.maxNode = findMaxNode(t.rootNode);
 		  this.minNode = t.minNode;
 		  this.maxNode = t.maxNode;
 		  return t.getRoot().getHeight();
@@ -720,8 +713,8 @@ public class AVLTree{
 	   if(t.empty()) {
 		   this.insert(x);
 		   t.rootNode = this.rootNode;
-		   this.minNode = findMin(this.rootNode);
-		   this.maxNode = findMax(this.rootNode);
+		   this.minNode = findMinNode(this.rootNode);
+		   this.maxNode = findMaxNode(this.rootNode);
 		   t.minNode = this.minNode;
 		   t.maxNode = this.maxNode;
 		   return this.getRoot().getSubTreeSize();
