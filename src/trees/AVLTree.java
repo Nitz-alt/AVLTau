@@ -1,5 +1,4 @@
 package trees;
-
 import trees.TreePrinter.PrintableNode;
 /**
  *
@@ -83,9 +82,15 @@ public class AVLTree{
    */
   
    public int insert(int k, String i) {
-	   //Tree is empty
-	   if(this.empty()) {
-		  this.rootNode = new AVLNode(k, i, null, VIRTUAL_NODE, VIRTUAL_NODE, 0) ;
+	   IAVLNode inNode = new AVLNode(k, i, /* parent */ null, /* left */ VIRTUAL_NODE, /* right */ VIRTUAL_NODE, /* height */ 0);
+	   return insert(inNode);
+   	}
+   
+   public int insert(IAVLNode inNode) {
+	   IAVLNode searchNodeResult = treePosition(rootNode, inNode.getKey());
+	   // If tree is empty, insert node in the root.
+	   if(searchNodeResult == VIRTUAL_NODE) { 
+		  this.rootNode = inNode;
 		  this.maxNode = rootNode;
 		  this.minNode = rootNode;
 		  rootNode.setSubTreeSize(1);
@@ -98,7 +103,7 @@ public class AVLTree{
 	   // If tree is empty, insert node in the root.
 	   
 	   // If node is found in the tree, we do nothing, num of operations has not changed.
-	   if(searchNodeResult.getKey() == k) {
+	   else if(searchNodeResult.getKey() == inNode.getKey()) {
 		   return -1;
 	   }
 	   // Node isn't in the tree, insertions and modifications are necessary.
@@ -123,9 +128,7 @@ public class AVLTree{
 	   }
 	   inNode.setSubTreeSize(1);
 	   return rebalancePostInsert(inNode);
-   	}
-   
-  
+   }
  
   public int rebalancePostInsert(IAVLNode insertNode){
 	  
@@ -695,17 +698,32 @@ public class AVLTree{
    {
 	   //Empty Cases
 	   if(this.empty() && t.empty()) {
+		   this.insert(x);
+		   t.rootNode = this.rootNode;
+		   t.maxNode = x;
+		   t.minNode = x;
+		   this.maxNode = x;
+		   this.minNode = x;
 		   return 1;
 	   }
 	   
 	   if(this.empty()) {
+		  t.insert(x);
 		  this.rootNode = t.rootNode;
+		  t.minNode = findMin(t.rootNode);
+		  t.maxNode = findMax(t.rootNode);
 		  this.minNode = t.minNode;
 		  this.maxNode = t.maxNode;
 		  return t.getRoot().getHeight();
 	   }
 	   
 	   if(t.empty()) {
+		   this.insert(x);
+		   t.rootNode = this.rootNode;
+		   this.minNode = findMin(this.rootNode);
+		   this.maxNode = findMax(this.rootNode);
+		   t.minNode = this.minNode;
+		   t.maxNode = this.maxNode;
 		   return this.getRoot().getSubTreeSize();
 	   }
 	  int runtime = this.getRoot().getSubTreeSize() - t.getRoot().getSubTreeSize() + 1;
@@ -745,6 +763,8 @@ public class AVLTree{
    }
    
    
+   
+  
    
    // thisTree is being set as the one with smaller keys
    public void joinSameSize(IAVLNode x, AVLTree thisTree, AVLTree t) {
