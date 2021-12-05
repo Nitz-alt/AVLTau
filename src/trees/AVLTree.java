@@ -405,6 +405,7 @@ public class AVLTree{
 	   }
 	   return curr;
    }
+   
    private IAVLNode findMaxNode(IAVLNode curr) {
 	   if (curr == null) { return null;}
 	   IAVLNode nextCurr = curr.getRight();
@@ -688,9 +689,7 @@ public class AVLTree{
 		   }
 	   }
 	   
-	   currNode.setLeft(null);
-	   currNode.setRight(null);
-	   currNode.setParent(null);
+	   detachNode(currNode);
 	   
 	   lowerTree.minNode = this.minNode;
 	   lowerTree.setNewMinAndMax(x == this.minNode.getKey(), true);
@@ -757,8 +756,8 @@ public class AVLTree{
 		  }
 	}
 	  //finding min/max - O(logn)
-	  minNode = findMinNode(this.getRoot());
-	  maxNode = findMaxNode(this.getRoot());
+	  this.minNode = findMinNode(this.getRoot());
+	  this.maxNode = findMaxNode(this.getRoot());
 	  return Math.abs(runtime);
    }
    

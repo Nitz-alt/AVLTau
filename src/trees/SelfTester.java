@@ -305,7 +305,6 @@ public class SelfTester {
             else{
                 System.out.println("delete failed");
                 }
-
         rep_counter++;
     }}
 
