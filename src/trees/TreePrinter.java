@@ -61,7 +61,7 @@ public class TreePrinter
                     next.add(null);
                     next.add(null);
                 } else {
-                    String aa = n.getKey() + " : " + n.getHeight();
+                    String aa = n.getKey() + " : " + n.getSubTreeSize();
                     line.add(aa);
                     if (aa.length() > widest) widest = aa.length();
 
