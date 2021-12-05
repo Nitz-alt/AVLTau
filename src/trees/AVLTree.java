@@ -1,7 +1,5 @@
 package trees;
-import javax.swing.text.DefaultEditorKit.InsertBreakAction;
 
-import org.w3c.dom.Node;
 
 import trees.TreePrinter.PrintableNode;
 /**
@@ -18,7 +16,10 @@ public class AVLTree{
 	private IAVLNode rootNode = VIRTUAL_NODE;
 	private IAVLNode minNode = VIRTUAL_NODE;
 	private IAVLNode maxNode = VIRTUAL_NODE;
-  /**
+
+	
+	
+	/**
    * public boolean empty()
    *
    * Returns true if and only if the tree is empty.
@@ -27,7 +28,17 @@ public class AVLTree{
   public boolean empty() {
     return !this.rootNode.isRealNode();
   }
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
  /**
    * public String search(int k)
    *
@@ -177,7 +188,15 @@ public class AVLTree{
 						numOps++;
 						  break;
 					}	
-					 
+					else if(rankDifXA == 1 && rankDifXB ==1) {
+						rotateRight(x);
+						x.setHeight(x.getHeight() + 1);
+						topAfterActioNode = x;
+						z.setSubTreeSize(b.getSubTreeSize() + y.getSubTreeSize() + 1);
+						x.setSubTreeSize(z.getSubTreeSize() + a.getSubTreeSize() + 1);
+						numOps++; 
+						break;
+					}
 				}//(rankDifZY == 2)
         	  }// x is right child cases
         	  if(z.getRight() == x) {
@@ -218,6 +237,15 @@ public class AVLTree{
 							topAfterActioNode = b;
 							  break;
 					  }
+					  else if(rankDifXA == 1 && rankDifXB ==1) {
+							rotateLeft(x);
+							x.setHeight(x.getHeight() + 1);
+							topAfterActioNode = x;
+							z.setSubTreeSize(b.getSubTreeSize() + y.getSubTreeSize() + 1);
+							x.setSubTreeSize(z.getSubTreeSize() + a.getSubTreeSize() + 1);
+							numOps++; 
+							break;
+						}
 	        	  }
         	  }
           
