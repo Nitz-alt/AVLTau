@@ -1116,7 +1116,8 @@ public class AVLTree{
 		   }
 	   }
 		public String toString() {
-			return "{Key: " + this.getKey() + ", Height: " + this.getHeight() + ", Tree size: " + this.getSubTreeSize() + "}";
+			//return "{Key: " + this.getKey() + ", Height: " + this.getHeight() + ", Tree size: " + this.getSubTreeSize() + "}";
+			return TreePrinter.print(this);
 		}
 	} 
 		

@@ -37,8 +37,9 @@ public class TreePrinter
      * @param root
      *            tree root node
      */
-    public static void print(PrintableNode root)
+    public static String print(PrintableNode root)
     {
+    	String st = "";
         List<List<String>> lines = new ArrayList<List<String>>();
 
         List<PrintableNode> level = new ArrayList<PrintableNode>();
@@ -100,25 +101,31 @@ public class TreePrinter
                             if (j < line.size() && line.get(j) != null) c = '└';
                         }
                     }
-                    System.out.print(c);
+                    //System.out.print(c);
+                    st += ""+c;
 
                     // lines and spaces
                     if (line.get(j) == null) {
                         for (int k = 0; k < perpiece - 1; k++) {
-                            System.out.print(" ");
+                            //System.out.print(" ");
+                            st += " ";
                         }
                     } else {
 
                         for (int k = 0; k < hpw; k++) {
-                            System.out.print(j % 2 == 0 ? " " : "─");
+                            //System.out.print(j % 2 == 0 ? " " : "─");
+                            st += j % 2 == 0 ? " " : "─";
                         }
-                        System.out.print(j % 2 == 0 ? "┌" : "┐");
+                        //System.out.print(j % 2 == 0 ? "┌" : "┐");
+                        st += j % 2 == 0 ? "┌" : "┐";
                         for (int k = 0; k < hpw; k++) {
-                            System.out.print(j % 2 == 0 ? "─" : " ");
+                            //System.out.print(j % 2 == 0 ? "─" : " ");
+                            st += j % 2 == 0 ? "─" : " ";
                         }
                     }
                 }
-                System.out.println();
+                //System.out.println();
+                st += "\n";
             }
 
             // print line of numbers
@@ -131,17 +138,22 @@ public class TreePrinter
 
                 // a number
                 for (int k = 0; k < gap1; k++) {
-                    System.out.print(" ");
+                    //System.out.print(" ");
+                    st += " ";
                 }
-                System.out.print(f);
+                //System.out.print(f);
+                st += ""+f;
                 for (int k = 0; k < gap2; k++) {
-                    System.out.print(" ");
+                    //System.out.print(" ");
+                    st +=" ";
                 }
             }
-            System.out.println();
+            //System.out.println();
+            st+= '\n';
 
             perpiece /= 2;
         }
+        return st;
     }
     
     public static void main(String[] args) {
