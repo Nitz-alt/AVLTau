@@ -129,6 +129,7 @@ public class AVLTree{
       int numOps = 0;
       //Traverse the tree until you get to the top
       while(!isRoot(x)){
+    	  System.out.println("in rebalance, going up");
     	  IAVLNode z = x.getParent();
     	  if (x.getHeight() != z.getHeight()) {
 				x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
@@ -174,7 +175,21 @@ public class AVLTree{
 						topAfterActioNode = b;
 						numOps++;
 						  break;
-					}	
+					}
+					else if(rankDifXA == 1 && rankDifXB == 1) {
+						rotateRight(x);
+						x.setHeight(x.getHeight() + 1);
+						x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
+						z.setSubTreeSize(z.getRight().getSubTreeSize() + z.getLeft().getSubTreeSize() + 1);
+						x.setParent(z.getParent());
+						z.setParent(x);
+						x.setRight(z);
+						z.setLeft(b);
+						b.setParent(z);
+						topAfterActioNode =x;
+						numOps++;
+					}
+						
 					 
 				}//(rankDifZY == 2)
         	  }// x is right child cases
@@ -216,11 +231,29 @@ public class AVLTree{
 							topAfterActioNode = b;
 							  break;
 					  }
+					  
+					  else if(rankDifXA == 1 && rankDifXB == 1) {
+							rotateLeft(x);
+							x.setHeight(x.getHeight() + 1);
+							x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
+							z.setSubTreeSize(z.getRight().getSubTreeSize() + z.getLeft().getSubTreeSize() + 1);
+							x.setParent(z.getParent());
+							z.setParent(x);
+							x.setLeft(z);
+							z.setRight(b);
+							b.setParent(z);
+							topAfterActioNode = x;
+							numOps++;
+
+						}
+					 
 	        	  }
         	  }
           
           }// 
           }//while
+	  System.out.println("done rebalance");
+
       topAfterActioNode.increaseSizeOfSubTreeOfAllParents();
       return numOps;
   }  
@@ -758,6 +791,8 @@ public class AVLTree{
    
    // thisTree is being set as the one with smaller keys
    public void joinSameSize(IAVLNode x, AVLTree thisTree, AVLTree t) {
+ 	  System.out.println("join same size");
+
 	   x.setLeft(thisTree.getRoot());
 	   x.setRight(t.getRoot());
 	   x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
@@ -766,6 +801,8 @@ public class AVLTree{
 	   x.setHeight(x.getLeft().getHeight() + 1);
 	   thisTree.rootNode = x;
 	   t.rootNode = x;
+	 	  System.out.println("join same size done");
+
    }
    
    
@@ -774,6 +811,8 @@ public class AVLTree{
    
 //   lowTree.key > highTree.key
    public void joinLargerWithSmaller(IAVLNode x, AVLTree lowTree, AVLTree highTree) {
+	 	  System.out.println("join larger smaller");
+
 	   int sizeOfThisTree = lowTree.getRoot().getSubTreeSize() + 1;
 	   IAVLNode b = highTree.getRoot();
 		  while(b.getHeight() > lowTree.getRoot().getHeight()) {
@@ -800,18 +839,23 @@ public class AVLTree{
 			  rebalancePostInsert(x);
 		  }
 		  x.increaseSubTreeSizeAfterJoin(sizeOfThisTree);
+	 	  System.out.println("join larger smaller done");
+
 }
    
   
 
    // lowTree.key < highTree root
    public void joinSmallerWithLarger(IAVLNode x, AVLTree lowTree, AVLTree highTree) {
+	 	  System.out.println("join smaller larger ");
+
 	   int sizeOfThisTree = lowTree.getRoot().getSubTreeSize() + 1;
 	   IAVLNode b = highTree.getRoot();
 		  while(b.getHeight() > lowTree.getRoot().getHeight()) {
 
 			  b = b.getLeft();
 		  }
+		  System.out.println("height of low size = "+lowTree.getRoot().getHeight() + "height of high tree = " + highTree.getRoot().getHeight());
 		  IAVLNode c = b.getParent();
 		  IAVLNode a = lowTree.getRoot();
 
@@ -821,22 +865,25 @@ public class AVLTree{
 		  x.setParent(c);
 		  a.setParent(x);
 		  b.setParent(x);
-		  
+		  System.out.println("11111111111");
 		  x.setHeight(lowTree.getRoot().getHeight() + 1);
 		  x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
 		  IAVLNode newRoot = c;
 		  while(newRoot.getParent() != null) {
 			  newRoot = newRoot.getParent();
 		  }
-
+		  System.out.println("22222222");
 		  highTree.rootNode = newRoot;
 		  lowTree.rootNode = newRoot;
 		  if(x.getHeight() == c.getHeight()) {
+			  System.out.println("3333333333");
 			  rebalancePostInsert(x);
-
 		  }
+		  System.out.println("44444444444");
 		  x.increaseSubTreeSizeAfterJoin(sizeOfThisTree);
-	  
+		  System.out.println("55555555");
+	 	  System.out.println("join smaller larger done");
+
 
 }
    
