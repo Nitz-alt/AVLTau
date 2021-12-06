@@ -627,7 +627,8 @@ public class AVLTree{
 	   higherTree.rootNode = currNode.getRight();
 	   higherTree.getRoot().setParent(null); // Detaching child from parent
 	   currNode.setRight(END_OF_TREE_NODE);
-	   
+	   IAVLNode splitNode = currNode;
+
 	   if (currNode != this.getRoot()) {
 		   boolean currIsLower = currNode.getParent().getRight() == currNode;
 		   currNode = currNode.getParent();
@@ -640,9 +641,7 @@ public class AVLTree{
 			   }
 			   if (currIsLower) {
 				   IAVLNode leftSubTreeRoot = currNode.getLeft();
-				   currNode.setParent(null);
-				   currNode.setLeft(END_OF_TREE_NODE);
-				   currNode.setRight(END_OF_TREE_NODE);
+				   detachNode(currNode);
 				   currNode.setHeight(0);
 				   leftSubTreeRoot.setParent(null);
 				   AVLTree addToLower = new AVLTree();
@@ -652,9 +651,7 @@ public class AVLTree{
 			   }
 			   else {
 				   IAVLNode rightSubTreeRoot = currNode.getRight();
-				   currNode.setParent(null);
-				   currNode.setRight(END_OF_TREE_NODE);
-				   currNode.setLeft(END_OF_TREE_NODE);
+				   detachNode(currNode);
 				   currNode.setHeight(0);
 				   rightSubTreeRoot.setParent(null);
 				   AVLTree addToHigher = new AVLTree();
@@ -666,7 +663,8 @@ public class AVLTree{
 		   }
 	   }
 	   
-	   detachNode(currNode);
+	   detachNode(splitNode);
+	   
 	   
 	   lowerTree.minNode = this.minNode;
 	   lowerTree.setNewMinAndMax(x == this.minNode.getKey(), true);
