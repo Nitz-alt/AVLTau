@@ -709,7 +709,6 @@ public class AVLTree{
 	   
 	   if (currNode != this.getRoot()) {
 		   boolean currIsLower = currNode.getParent().getRight() != currNode;
-		   IAVLNode realX = currNode;
 		   currNode = currNode.getParent();
 		   while (currNode != null) {
 			   IAVLNode nextCurr = currNode.getParent();
@@ -721,6 +720,7 @@ public class AVLTree{
 				   IAVLNode leftSubTreeRoot = currNode.getLeft();
 				   detachNode(currNode);
 				   currNode.setHeight(0);
+				   currNode.setSubTreeSize(1);
 				   leftSubTreeRoot.setParent(null);
 				   AVLTree addToLower = new AVLTree();
 				   addToLower.rootNode = leftSubTreeRoot;
@@ -731,6 +731,7 @@ public class AVLTree{
 				   IAVLNode rightSubTreeRoot = currNode.getRight();
 				   detachNode(currNode); 
 				   currNode.setHeight(0);
+				   currNode.setSubTreeSize(1);
 				   rightSubTreeRoot.setParent(null);
 				   AVLTree addToHigher = new AVLTree();
 				   addToHigher.rootNode = rightSubTreeRoot;
