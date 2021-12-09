@@ -1,8 +1,4 @@
 package trees;
-import java.util.zip.ZipEntry;
-
-import javax.naming.InitialContext;
-
 import trees.TreePrinter.PrintableNode;
 /**
  *
@@ -352,8 +348,10 @@ public class AVLTree{
 		   currSuccessor.setParent(currNode.getParent());
 		   currSuccessor.setHeight(currNode.getHeight());
 		   currSuccessor.setSubTreeSize(currNode.getSubTreeSize());
-		   currSuccessor.getRight().setParent(currSuccessor);
-		   currSuccessor.getLeft().setParent(currSuccessor);
+		   if (currSuccessor.getRight().isRealNode())
+			   currSuccessor.getRight().setParent(currSuccessor);
+		   if (currSuccessor.getLeft().isRealNode())
+			   currSuccessor.getLeft().setParent(currSuccessor);
 		   
 		   // The successor could be the maximum therefore we need to replace that too
 		   if (this.maxNode.getKey() < currSuccessor.getKey()) {
@@ -700,7 +698,7 @@ public class AVLTree{
    {
 	   final IAVLNode END_OF_TREE_NODE = VIRTUAL_NODE;
 	   IAVLNode currNode = this.searchNode(x);
-	   if (currNode == null) {return null;};
+	   //if (currNode == null) {return null;};
 	   AVLTree lowerTree = new AVLTree(); // Lower tree
 	   lowerTree.rootNode = currNode.getLeft();
 	   lowerTree.getRoot().setParent(null); // Detaching child from parent
