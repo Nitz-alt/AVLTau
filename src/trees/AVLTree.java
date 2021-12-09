@@ -698,7 +698,6 @@ public class AVLTree{
    {
 	   final IAVLNode END_OF_TREE_NODE = VIRTUAL_NODE;
 	   IAVLNode currNode = this.searchNode(x);
-	   //if (currNode == null) {return null;};
 	   AVLTree lowerTree = new AVLTree(); // Lower tree
 	   lowerTree.rootNode = currNode.getLeft();
 	   lowerTree.getRoot().setParent(null); // Detaching child from parent
@@ -746,6 +745,10 @@ public class AVLTree{
 		   }
 	   }
 	   detachNode(splitNode);
+	   this.rootNode = splitNode;
+	   this.maxNode = splitNode;
+	   this.minNode = splitNode;
+	   
 	   
 	   if (lowerTree.getRoot().isRealNode()) {
 		   lowerTree.minNode = this.minNode;
@@ -1008,7 +1011,7 @@ public class AVLTree{
        if (this.isRoot(y)) {
            this.rootNode = x;
        }
-       else if (isRightSon(y)) {
+       else if (yParent.getRight() == y) {
            yParent.setRight(x);
        }
        else {
@@ -1018,14 +1021,15 @@ public class AVLTree{
        // x case
        if (x.isRealNode()) {
     	   x.setParent(yParent);
+    	   x.setRight(y);
        }
-       x.setRight(y);
+       
        
        // y case
        if (y.isRealNode()) {
     	   y.setParent(x);
+    	   y.setLeft(b);
        }
-       y.setLeft(b);
        
        // b case
        if (b.isRealNode()) {
@@ -1046,7 +1050,7 @@ public class AVLTree{
 	          this.rootNode = y;
 	          y.setParent(null);
 	      }
-	      else if(isRightSon(x)){
+	      else if(xParent.getRight() == x){
 	          xParent.setRight(y);
 	      }
 	      else{
