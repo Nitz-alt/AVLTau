@@ -394,6 +394,8 @@ public class AVLTree{
    }
    
    private static void detachNode(IAVLNode node) {
+	   node.setHeight(0);
+	   node.setSubTreeSize(1);
 	   node.setParent(null);
 	   node.setRight(VIRTUAL_NODE);
 	   node.setLeft(VIRTUAL_NODE);
@@ -722,9 +724,7 @@ public class AVLTree{
 			   if (currIsLower) {
 				   IAVLNode leftSubTreeRoot = currNode.getLeft();
 				   detachNode(currNode);
-				   currNode.setHeight(0);
 				   leftSubTreeRoot.setParent(null);
-				   currNode.setSubTreeSize(1);
 				   AVLTree addToLower = new AVLTree();
 				   addToLower.rootNode = leftSubTreeRoot;
 				   lowerTree.join(currNode, addToLower);
@@ -733,9 +733,7 @@ public class AVLTree{
 			   else {
 				   IAVLNode rightSubTreeRoot = currNode.getRight();
 				   detachNode(currNode);
-				   currNode.setHeight(0);
 				   rightSubTreeRoot.setParent(null);
-				   currNode.setSubTreeSize(1);
 				   AVLTree addToHigher = new AVLTree();
 				   addToHigher.rootNode = rightSubTreeRoot;
 				   higherTree.join(currNode, addToHigher);
@@ -747,7 +745,7 @@ public class AVLTree{
 	   detachNode(splitNode);
 	   this.rootNode = splitNode;
 	   this.maxNode = splitNode;
-	   this.minNode = splitNode;
+	   this.minNode = splitNode;	   
 	   
 	   
 	   if (lowerTree.getRoot().isRealNode()) {
@@ -1249,7 +1247,7 @@ public class AVLTree{
       if (! ((diffs[0]==1&&diffs[1]==1) ||
               (diffs[0]==2&&diffs[1]==1) ||
               (diffs[0]==1&&diffs[1]==2))) {
-    	  System.out.println(TreePrinter.print(this.getRoot()));
+    	  //System.out.println(TreePrinter.print(this.getRoot()));
           System.out.println("Rank diff is wrong for "+node.getKey());
           return false;
       }
