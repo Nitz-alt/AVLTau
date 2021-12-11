@@ -6,7 +6,6 @@
  * distinct integer keys and info.
  *
  */
-
 public class AVLTree{
 	public final static IAVLNode VIRTUAL_NODE = (new AVLTree()).new AVLNode();
 	private IAVLNode rootNode = VIRTUAL_NODE;
@@ -66,7 +65,53 @@ public class AVLTree{
 	  }
 	  return tempNode;
   }
-
+  
+  
+  private IAVLNode[] searchFromMaximum(int k) {
+	  IAVLNode startNode = this.maxNode;
+	  IAVLNode returnOp = new AVLNode(2, "");
+	  if (!this.maxNode.isRealNode()) {
+		  return new IAVLNode[] {returnOp, this.maxNode};
+	  }
+	  
+	  if (k > this.maxNode.getKey())
+		  return new IAVLNode[] {returnOp, startNode};
+	  
+	  while (startNode.getParent() != null && k < startNode.getParent().getKey()) {
+		  returnOp.setKey(returnOp.getKey() + 1);
+		  startNode = startNode.getParent();
+	  }
+	  
+	  IAVLNode nextNode = startNode.getLeft();
+	  
+	  while (nextNode.isRealNode()) {
+		  if (nextNode.getKey() == k) {
+			  return new IAVLNode[] {returnOp, nextNode};
+		  }
+		  else if (k > nextNode.getKey()) {
+			  startNode = nextNode;
+			  nextNode = nextNode.getRight();
+		  }
+		  else {
+			  startNode = nextNode;
+			  nextNode = nextNode.getLeft();  
+		  }
+		  returnOp.setKey(returnOp.getKey() + 1);
+	  }
+	  return new IAVLNode[] {returnOp, startNode};
+	  
+	  
+	  
+	  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
   /**
    * public int insert(int k, String i)
    *
@@ -84,17 +129,20 @@ public class AVLTree{
    	}
    
    public int insert(IAVLNode inNode) {
-	   IAVLNode searchNodeResult = treePosition(rootNode, inNode.getKey());
+	   //IAVLNode searchNodeResult = treePosition(rootNode, inNode.getKey());
+	    IAVLNode[] results = searchFromMaximum(inNode.getKey());
+	    IAVLNode searchNodeResult = results[1];
 	   // If tree is empty, insert node in the root.
 	   if(searchNodeResult == VIRTUAL_NODE) { 
 		  this.rootNode = inNode;
 		  this.maxNode = rootNode;
 		  this.minNode = rootNode;
-		  return 0;
+		  return 1;
    		}
 	   
 	   // If node is found in the tree, we do nothing, num of operations has not changed.
 	   else if(searchNodeResult.getKey() == inNode.getKey()) {
+		   System.out.println("key was already in tree");
 		   return -1;
 	   }
 	   // Node isn't in the tree, insertions and modifications are necessary.
@@ -121,7 +169,8 @@ public class AVLTree{
 		   increaseNode.setSubTreeSize(increaseNode.getSubTreeSize() + 1);
 		   increaseNode = increaseNode.getParent();
 	   }
-	   return rebalancePostInsert(inNode);
+	   rebalancePostInsert(inNode);
+	   return results[0].getKey();
    }
  
   public int rebalancePostInsert(IAVLNode insertNode){
@@ -1007,6 +1056,11 @@ public class AVLTree{
     	public void setSubTreeSize(int size);
     	public int getSubTreeSize();
     	public void increaseSubTreeSizeAfterJoin(int n);
+    	
+    	//Delete this after question 1
+    	public void setKey(int k);
+    	
+    	
 	}
 
    /** 
@@ -1136,7 +1190,11 @@ public class AVLTree{
 			   tempNode.setSubTreeSize(tempNode.getSubTreeSize() + n);
 			   tempNode = tempNode.getParent();
 		   }
-	   }
+	    }
+		
+		public void setKey(int key) {
+			this.key = key;
+		}
 		
 	} 
 //DELETE BEFORE SUBMITTING (for test)
