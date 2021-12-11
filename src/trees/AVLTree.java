@@ -80,6 +80,7 @@ public class AVLTree{
    */
   
    public int insert(int k, String i) {
+	   
 	   IAVLNode inNode = new AVLNode(k, i, /* parent */ null, /* left */ VIRTUAL_NODE, /* right */ VIRTUAL_NODE, /* height */ 0);
 	   return insert(inNode);
    	}
@@ -91,7 +92,6 @@ public class AVLTree{
 		  this.rootNode = inNode;
 		  this.maxNode = rootNode;
 		  this.minNode = rootNode;
-		  rootNode.setSubTreeSize(1);
 		  return 0;
    		}
 	   
@@ -112,44 +112,38 @@ public class AVLTree{
 	   if (inNode.getKey() < searchNodeResult.getKey()) {
 		   searchNodeResult.setLeft(inNode);
 		   inNode.setParent(searchNodeResult);
-		   inNode.setHeight(0);
 	   }
 	   else {
 		   searchNodeResult.setRight(inNode);
 		   inNode.setParent(searchNodeResult); 
-		   inNode.setHeight(0);
 	   }
-	   inNode.setSubTreeSize(1);
+	   
+	   IAVLNode increaseNode = searchNodeResult;
+	   while (increaseNode != null) {
+		   increaseNode.setSubTreeSize(increaseNode.getSubTreeSize() + 1);
+		   increaseNode = increaseNode.getParent();
+	   }
 	   return rebalancePostInsert(inNode);
    }
  
-   public int rebalancePostInsert(IAVLNode insertNode){
-	   return rebalance(insertNode, 1);
-   }
-   
-  public int rebalance(IAVLNode insertNode, int increaseSubtree){
-      IAVLNode x = insertNode;
-      IAVLNode topAfterActioNode = insertNode;
+  public int rebalancePostInsert(IAVLNode insertNode){
+	  IAVLNode x = insertNode;
       int numOps = 0;
       //Traverse the tree until you get to the top
       while(!isRoot(x)){
     	  IAVLNode z = x.getParent();
     	  if (x.getHeight() != z.getHeight()) {
-				x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
 				break;
     	  } 
     	  //Child and parent are of the same height - promote or rotate
           if (x.getHeight() == z.getHeight()){
-        	  if (z.getLeft() ==x) { // x is left child
+        	  if (z.getLeft() == x) { // x is left child
         		  IAVLNode y = z.getRight();
 				int rankDifZY = z.getHeight() - y.getHeight();
-				int rankDifZX = z.getHeight() - x.getHeight();
 				if(rankDifZY == 1) {//Promote
 					z.setHeight(z.getHeight() + 1);
-					z.setSubTreeSize(z.getSubTreeSize() + increaseSubtree);
 					x = z;
 					numOps++;
-					topAfterActioNode = z;
 					continue;
 				}
 				else if(rankDifZY == 2) { //Rotate(single or double) 
@@ -160,9 +154,6 @@ public class AVLTree{
 					if(rankDifXA == 1 && rankDifXB == 2) {//rotate single right
 						rotateRight(x);
 						z.setHeight(z.getHeight() - 1);
-						topAfterActioNode = x;
-						z.setSubTreeSize(b.getSubTreeSize() + y.getSubTreeSize() + 1);
-						x.setSubTreeSize(z.getSubTreeSize() + a.getSubTreeSize() + 1);
 						numOps++; 
 						break;
 					}
@@ -172,21 +163,14 @@ public class AVLTree{
 						x.setHeight(x.getHeight() - 1);
 						z.setHeight(z.getHeight() - 1);
 						b.setHeight(b.getHeight() + 1);
-						x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-						z.setSubTreeSize(z.getRight().getSubTreeSize() + z.getLeft().getSubTreeSize() + 1);
-						b.setSubTreeSize(x.getSubTreeSize() + z.getSubTreeSize() + 1);
-						topAfterActioNode = b;
 						numOps++;
 						  break;
 					}
 					else if(rankDifXA == 1 && rankDifXB == 1) {
 						rotateRight(x);
 						x.setHeight(x.getHeight() + 1);
-						x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-						z.setSubTreeSize(z.getRight().getSubTreeSize() + z.getLeft().getSubTreeSize() + 1);
-						topAfterActioNode =x;
 						numOps++;
-					}		 
+					}		
 				}//(rankDifZY == 2)
         	  }// x is right child cases
         	  if(z.getRight() == x) {
@@ -194,10 +178,8 @@ public class AVLTree{
   				  int rankDifZY = z.getHeight() - y.getHeight();
   				  if(rankDifZY == 1) {//Promote
 					z.setHeight(z.getHeight() + 1);
-					z.setSubTreeSize(z.getSubTreeSize() + increaseSubtree);
 					x = z;
 					numOps++;
-					topAfterActioNode = z;
 					continue;
 				}
   				  else if(rankDifZY == 2) {//single or double rotation left
@@ -208,10 +190,7 @@ public class AVLTree{
 					  if(rankDifXA == 1 && rankDifXB == 2) {//rotate single left
 						  rotateLeft(x);
 						  z.setHeight(z.getHeight() - 1);
-						  z.setSubTreeSize(b.getSubTreeSize() + y.getSubTreeSize() + 1);
-						  x.setSubTreeSize(z.getSubTreeSize() + a.getSubTreeSize() + 1);
 						  numOps++;
-						  topAfterActioNode = x;
 						  break;
 					  }
 					  if(rankDifXA ==2 && rankDifXB == 1) {
@@ -220,28 +199,20 @@ public class AVLTree{
 							x.setHeight(x.getHeight() - 1);
 							z.setHeight(z.getHeight() - 1);
 							b.setHeight(b.getHeight() + 1);
-							x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-							z.setSubTreeSize(z.getRight().getSubTreeSize() + z.getLeft().getSubTreeSize() + 1);
-							b.setSubTreeSize(x.getSubTreeSize() + z.getSubTreeSize() + 1);
 							numOps++;
-							topAfterActioNode = b;
 							  break;
 					  }
-					  
 					  else if(rankDifXA == 1 && rankDifXB == 1) {
-							rotateLeft(x);
-							x.setHeight(x.getHeight() + 1);
-							x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-							z.setSubTreeSize(z.getRight().getSubTreeSize() + z.getLeft().getSubTreeSize() + 1);
-							topAfterActioNode = x;
-							numOps++;
-						}
+						  rotateLeft(x);
+						  x.setHeight(x.getHeight() + 1);
+						  numOps++;
+						}	  
 	        	  }
         	  }
           
           }// 
           }//while
-      topAfterActioNode.increaseSizeOfSubTreeOfAllParents(increaseSubtree);
+      //topAfterActioNode.increaseSizeOfSubTreeOfAllParents(increaseSubtree);
       return numOps;
   }  
   
@@ -338,8 +309,10 @@ public class AVLTree{
 		   currSuccessor.setParent(currNode.getParent());
 		   currSuccessor.setHeight(currNode.getHeight());
 		   currSuccessor.setSubTreeSize(currNode.getSubTreeSize());
-		   currSuccessor.getRight().setParent(currSuccessor);
-		   currSuccessor.getLeft().setParent(currSuccessor);
+		   if (currSuccessor.getRight().isRealNode())
+			   currSuccessor.getRight().setParent(currSuccessor);
+		   if (currSuccessor.getLeft().isRealNode())
+			   currSuccessor.getLeft().setParent(currSuccessor);
 		   
 		   // The successor could be the maximum therefore we need to replace that too
 		   if (this.maxNode.getKey() < currSuccessor.getKey()) {
@@ -382,6 +355,8 @@ public class AVLTree{
    }
    
    private static void detachNode(IAVLNode node) {
+	   node.setHeight(0);
+	   node.setSubTreeSize(1);
 	   node.setParent(null);
 	   node.setRight(VIRTUAL_NODE);
 	   node.setLeft(VIRTUAL_NODE);
@@ -623,69 +598,7 @@ public class AVLTree{
 	   return this.rootNode;
    }
 
-   public AVLTree[] split(int x)
-   {
-	   final IAVLNode END_OF_TREE_NODE = VIRTUAL_NODE;
-	   IAVLNode currNode = this.searchNode(x);
-	   if (currNode == null) {return null;};
-	   
-	   AVLTree lowerTree = new AVLTree(); // Lower tree
-	   lowerTree.rootNode = currNode.getLeft();
-	   lowerTree.getRoot().setParent(null); // Detaching child from parent
-	   currNode.setLeft(END_OF_TREE_NODE);
-	   
-	   AVLTree higherTree = new AVLTree(); // Higher tree
-	   higherTree.rootNode = currNode.getRight();
-	   higherTree.getRoot().setParent(null); // Detaching child from parent
-	   currNode.setRight(END_OF_TREE_NODE);
-	   IAVLNode splitNode = currNode;
-
-	   if (currNode != this.getRoot()) {
-		   boolean currIsLower = currNode.getParent().getRight() == currNode;
-		   currNode = currNode.getParent();
-		   
-		   while (currNode != null) {
-			   IAVLNode nextCurr = currNode.getParent();
-			   boolean nextCurrIsLower = false;
-			   if (nextCurr != null) {
-				   nextCurrIsLower = nextCurr.getRight() == currNode;
-			   }
-			   if (currIsLower) {
-				   IAVLNode leftSubTreeRoot = currNode.getLeft();
-				   detachNode(currNode);
-				   currNode.setHeight(0);
-				   leftSubTreeRoot.setParent(null);
-				   AVLTree addToLower = new AVLTree();
-				   addToLower.rootNode = leftSubTreeRoot;
-				   lowerTree.join(currNode, addToLower);
-				   
-			   }
-			   else {
-				   IAVLNode rightSubTreeRoot = currNode.getRight();
-				   detachNode(currNode);
-				   currNode.setHeight(0);
-				   rightSubTreeRoot.setParent(null);
-				   AVLTree addToHigher = new AVLTree();
-				   addToHigher.rootNode = rightSubTreeRoot;
-				   higherTree.join(currNode, addToHigher);
-			   }
-			   currNode = nextCurr;
-			   currIsLower = nextCurrIsLower;
-		   }
-	   }
-	   
-	   detachNode(splitNode);
-	   
-	   if (lowerTree.getRoot().isRealNode()) {
-		   lowerTree.minNode = this.minNode;
-		   lowerTree.setNewMinAndMax(x == this.minNode.getKey(), true);
-	   }
-	   if (higherTree.getRoot().isRealNode()) {
-		   higherTree.maxNode = this.maxNode;
-		   higherTree.setNewMinAndMax(true, x == this.maxNode.getKey());
-	   }
-	   return new AVLTree[] {lowerTree, higherTree};
-   }
+   
    
 // /**
 // * public AVLTree[] split(int x)
@@ -696,7 +609,7 @@ public class AVLTree{
 //	* precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
 // * postcondition: none
 // */   
-//public AVLTree[] split(int x)
+////public AVLTree[] split(int x)
 //{
 //	IAVLNode xNode = this.searchNode(x);
 //	
@@ -735,87 +648,77 @@ public class AVLTree{
 //	return  new AVLTree[] {smallTree, bigTree};
 //}
    
-//   /**
-//    * public AVLTree[] split(int x)
-//    *
-//    * splits the tree into 2 trees according to the key x. 
-//    * Returns an array [t1, t2] with two AVL trees. keys(t1) < x < keys(t2).
-//    * 
-//	* precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
-//    * postcondition: none
-//    */   
-//   public AVLTree[] split(int x)
-//   {
-//	   final IAVLNode END_OF_TREE_NODE = VIRTUAL_NODE;
-//	   IAVLNode currNode = this.searchNode(x);
-//	   if (currNode == null) {return null;};
-//	   IAVLNode parentOfCurr = currNode.getParent();
-//	   
-//	   AVLTree lowerTree = new AVLTree(); // Lower tree
-//	   lowerTree.rootNode = currNode.getLeft();
-//	   lowerTree.getRoot().setParent(null); // Detaching child from parent
-//	   currNode.setLeft(END_OF_TREE_NODE);
-//	   if(parentOfCurr.getRight() == currNode) {
-//		   parentOfCurr.setRight(lowerTree.getRoot());
-//	   }
-//	   
-//	   AVLTree higherTree = new AVLTree(); // Higher tree
-//	   higherTree.rootNode = currNode.getRight();
-//	   higherTree.getRoot().setParent(null); // Detaching child from parent
-//	   currNode.setRight(END_OF_TREE_NODE);
-//	   IAVLNode splitNode = currNode;
-//	   if(parentOfCurr.getLeft() == currNode) {
-//		   parentOfCurr.setLeft(higherTree.getRoot());
-//	   }
-//	  // parentOfCurr.setSubTreeSize(parentOfCurr.getLeft().getSubTreeSize() + parentOfCurr.getRight().getSubTreeSize() + 1);
-//	   
-//	   if (currNode != this.getRoot()) {
-//		   boolean currIsLower = currNode.getParent().getRight() != currNode;
-//		   IAVLNode realX = currNode;
-//		   currNode = currNode.getParent();
-//		   while (currNode != null) {
-//			   IAVLNode nextCurr = currNode.getParent();
-//			   boolean nextCurrIsLower = false;
-//			   if (nextCurr != null) {
-//				   nextCurrIsLower = nextCurr.getRight() == currNode;
-//			   }
-//			   if (currIsLower) {
-//				   IAVLNode leftSubTreeRoot = currNode.getLeft();
-//				   detachNode(currNode);
-//				   currNode.setHeight(0);
-//				   leftSubTreeRoot.setParent(null);
-//				   AVLTree addToLower = new AVLTree();
-//				   addToLower.rootNode = leftSubTreeRoot;
-//				   lowerTree.join(currNode, addToLower);
-//				   
-//			   }
-//			   else {
-//				   IAVLNode rightSubTreeRoot = currNode.getRight();
-//				   detachNode(currNode); 
-//				   currNode.setHeight(0);
-//				   rightSubTreeRoot.setParent(null);
-//				   AVLTree addToHigher = new AVLTree();
-//				   addToHigher.rootNode = rightSubTreeRoot;
-//				   higherTree.join(currNode, addToHigher);
-//			   }
-//			   currNode = nextCurr;
-//			   currIsLower = nextCurrIsLower;
-//		   }
-//	   }
-//	   
-//	   detachNode(splitNode);
-//	   
-////	   lowerTree.minNode = findMinNode(this.getRoot());
-////	   lowerTree.maxNode = findMaxNode(this.getRoot());
-////	   higherTree.minNode = findMinNode(this.getRoot());
-////	   higherTree.maxNode = findMaxNode(this.getRoot());
-//	   lowerTree.minNode = this.minNode;
-//	   lowerTree.setNewMinAndMax(x == this.minNode.getKey(), true);
-//	   
-//	   higherTree.maxNode = this.maxNode;
-//	   higherTree.setNewMinAndMax(true, x == this.maxNode.getKey());
-//	   return new AVLTree[] {lowerTree, higherTree};
-//   }
+   /**
+    * public AVLTree[] split(int x)
+    *
+    * splits the tree into 2 trees according to the key x. 
+    * Returns an array [t1, t2] with two AVL trees. keys(t1) < x < keys(t2).
+    * 
+	* precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
+    * postcondition: none
+    */   
+   public AVLTree[] split(int x)
+   {
+	   final IAVLNode END_OF_TREE_NODE = VIRTUAL_NODE;
+	   IAVLNode currNode = this.searchNode(x);
+	   AVLTree lowerTree = new AVLTree(); // Lower tree
+	   lowerTree.rootNode = currNode.getLeft();
+	   lowerTree.getRoot().setParent(null); // Detaching child from parent
+	   currNode.setLeft(END_OF_TREE_NODE);
+	   
+	   AVLTree higherTree = new AVLTree(); // Higher tree
+	   higherTree.rootNode = currNode.getRight();
+	   higherTree.getRoot().setParent(null); // Detaching child from parent
+	   currNode.setRight(END_OF_TREE_NODE);
+	   IAVLNode splitNode = currNode;
+
+	   if (currNode != this.getRoot()) {
+		   boolean currIsLower = currNode.getParent().getRight() == currNode;
+		   currNode = currNode.getParent();
+		   
+		   while (currNode != null) {
+			   IAVLNode nextCurr = currNode.getParent();
+			   boolean nextCurrIsLower = false;
+			   if (nextCurr != null) {
+				   nextCurrIsLower = nextCurr.getRight() == currNode;
+			   }
+			   if (currIsLower) {
+				   IAVLNode leftSubTreeRoot = currNode.getLeft();
+				   detachNode(currNode);
+				   leftSubTreeRoot.setParent(null);
+				   AVLTree addToLower = new AVLTree();
+				   addToLower.rootNode = leftSubTreeRoot;
+				   lowerTree.join(currNode, addToLower);
+				   
+			   }
+			   else {
+				   IAVLNode rightSubTreeRoot = currNode.getRight();
+				   detachNode(currNode);
+				   rightSubTreeRoot.setParent(null);
+				   AVLTree addToHigher = new AVLTree();
+				   addToHigher.rootNode = rightSubTreeRoot;
+				   higherTree.join(currNode, addToHigher);
+			   }
+			   currNode = nextCurr;
+			   currIsLower = nextCurrIsLower;
+		   }
+	   }
+	   detachNode(splitNode);
+	   this.rootNode = splitNode;
+	   this.maxNode = splitNode;
+	   this.minNode = splitNode;	   
+	   
+	   
+	   if (lowerTree.getRoot().isRealNode()) {
+		   lowerTree.minNode = this.minNode;
+		   lowerTree.setNewMinAndMax(x == this.minNode.getKey(), true);
+	   }
+	   if (higherTree.getRoot().isRealNode()) {
+		   higherTree.maxNode = this.maxNode;
+		   higherTree.setNewMinAndMax(true, x == this.maxNode.getKey());
+	   }
+	   return new AVLTree[] {lowerTree, higherTree};
+   }
    
    /**
     * public int join(IAVLNode x, AVLTree t)
@@ -828,7 +731,7 @@ public class AVLTree{
     */   
    public int join(IAVLNode x, AVLTree t)
    {
-	   //Empty Cases
+	   // Both tress are empty.
 	   if(this.empty() && t.empty()) {
 		   this.insert(x);
 		   t.rootNode = this.rootNode;
@@ -839,6 +742,7 @@ public class AVLTree{
 		   return 1;
 	   }
 	   
+	   // This tree is empty.
 	   if(this.empty()) {
 		  t.insert(x);
 		  this.rootNode = t.rootNode;
@@ -846,7 +750,7 @@ public class AVLTree{
 		  t.maxNode = findMaxNode(t.rootNode);
 		  this.minNode = t.minNode;
 		  this.maxNode = t.maxNode;
-		  return t.getRoot().getHeight();
+		  return t.getRoot().getHeight() + 1;
 	   }
 	   
 	   if(t.empty()) {
@@ -856,7 +760,7 @@ public class AVLTree{
 		   this.maxNode = findMaxNode(this.rootNode);
 		   t.minNode = this.minNode;
 		   t.maxNode = this.maxNode;
-		   return this.getRoot().getSubTreeSize();
+		   return this.getRoot().getHeight() + 1;
 	   }
 	  int runtime = this.getRoot().getSubTreeSize() - t.getRoot().getSubTreeSize() + 1;
 	  int higherTree = checkWhichIsLarger(this.getRoot().getHeight(), t.getRoot().getHeight());
@@ -895,6 +799,14 @@ public class AVLTree{
 	  t.rootNode = this.rootNode;
 	  t.minNode = findMinNode(t.getRoot());
 	  t.maxNode = findMaxNode(t.getRoot());
+	  
+	  IAVLNode increaseSizeNode = x;
+	  while (increaseSizeNode != null) {
+		  increaseSizeNode.setSubTreeSize(increaseSizeNode.getLeft().getSubTreeSize() + increaseSizeNode.getRight().getSubTreeSize() + 1);
+		  increaseSizeNode = increaseSizeNode.getParent();
+	  }
+	  
+	  
 	  return Math.abs(runtime);
    }
    
@@ -920,69 +832,76 @@ public class AVLTree{
    
 //   lowTree.key > highTree.key
    public void joinLargerWithSmaller(IAVLNode x, AVLTree lowTree, AVLTree highTree) {
-	   int sizeOfThisTree = lowTree.getRoot().getSubTreeSize() +1;
+//	   System.out.println("join larger with smaller " + lowTree.getRoot().getKey() + " " + highTree.getRoot().getKey() );
 	   IAVLNode b = highTree.getRoot();
-		  while(b.getHeight() > lowTree.getRoot().getHeight() && b.getRight() != VIRTUAL_NODE) {
-			  b = b.getRight();
-		  }
-		  IAVLNode c = b.getParent();
-		  IAVLNode a = lowTree.getRoot();
-		  if (c != null ) {
-			  c.setRight(x);
-		  }
-		  x.setRight(a);
-		  x.setLeft(b);
-		  x.setParent(c);
-		  a.setParent(x);
-		  b.setParent(x);
-		  x.setHeight(lowTree.getRoot().getHeight() + 1);
-		  x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-		  IAVLNode newRoot = x;
-		  while(newRoot.getParent() != null) {
-			  newRoot = newRoot.getParent();
-		  }
-		  highTree.rootNode = newRoot;
-		  lowTree.rootNode = newRoot;
-		  
-		  if(c != null && x.getHeight() == c.getHeight()) {
-			  rebalance(x, sizeOfThisTree);
-		  } else {
-		   x.increaseSubTreeSizeAfterJoin(sizeOfThisTree);
-		  }
+	   // We keep the parent in case b will be a virtual node and we cannot trace back the parent.
+	   IAVLNode bParent = b.getParent();
+	   while(b.getHeight() > lowTree.getRoot().getHeight() && b != VIRTUAL_NODE) {
+		   bParent = b;
+		   b = b.getRight();
+		   }
+	   IAVLNode c = bParent;
+	   IAVLNode a = lowTree.getRoot();
+	   c.setRight(x);
+	   x.setRight(a);
+	   x.setLeft(b);
+	   x.setParent(c);
+	   a.setParent(x);
+	   if (b != VIRTUAL_NODE) b.setParent(x);  // Never set a parent for a virtual node!
+
+	   x.setHeight(lowTree.getRoot().getHeight() + 1);
+	   x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
+	   IAVLNode newRoot = x;
+	   IAVLNode parent = newRoot.getParent();
+	   while(parent != null) {
+		   parent.setSubTreeSize(parent.getLeft().getSubTreeSize() + parent.getRight().getSubTreeSize() + 1);
+		   newRoot = parent;
+		   parent = parent.getParent();
+	   }
+	   highTree.rootNode = newRoot;
+	   lowTree.rootNode = newRoot;
+	   highTree.maxNode = highTree.findMaxNode(rootNode);
+	   lowTree.maxNode = lowTree.findMaxNode(rootNode);
+	   highTree.minNode= highTree.findMinNode(rootNode);
+	   lowTree.minNode = lowTree.findMinNode(rootNode);
+	   rebalancePostInsert(x);
 }
-   
-  
 
    // lowTree.key < highTree root
    public void joinSmallerWithLarger(IAVLNode x, AVLTree lowTree, AVLTree highTree) {
-	   int sizeOfThisTree = lowTree.getRoot().getSubTreeSize() + 1;
+//	   System.out.println("join smaller with larger " + lowTree.getRoot().getKey() + " " + highTree.getRoot().getKey() );
 	   IAVLNode b = highTree.getRoot();
-		  while(b.getHeight() > lowTree.getRoot().getHeight() && b.getLeft() != VIRTUAL_NODE) {
-			  b = b.getLeft();
-		  }
-		  IAVLNode c = b.getParent();
-		  IAVLNode a = lowTree.getRoot();		  
-		  if (c != null ) {
-			  c.setLeft(x);
-		  }
-		  x.setLeft(a);
-		  x.setRight(b);
-		  x.setParent(c);
-		  a.setParent(x);
-		  b.setParent(x);
-		  x.setHeight(lowTree.getRoot().getHeight() + 1);
-		  x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
-		  IAVLNode newRoot = x;
-		  while(newRoot.getParent() != null) {
-			  newRoot = newRoot.getParent();
-		  }
-		  highTree.rootNode = newRoot;
-		  lowTree.rootNode = newRoot;
-		  if(c != null && x.getHeight() == c.getHeight()) {
-			  int didRebalance = rebalance(x, sizeOfThisTree);
-		  } else {
-			  x.increaseSubTreeSizeAfterJoin(sizeOfThisTree);
-		  }
+	   // We keep the parent in case b will be a virtual node and we cannot trace back the parent.
+	   IAVLNode bParent = b.getParent();
+	   while(b.getHeight() > lowTree.getRoot().getHeight() && b != VIRTUAL_NODE) {
+		   bParent = b;
+		   b = b.getLeft();
+		   }
+	   IAVLNode c = bParent;
+	   IAVLNode a = lowTree.getRoot();
+	   c.setLeft(x);
+	   x.setLeft(a);
+	   x.setRight(b);
+	   x.setParent(c);
+	   a.setParent(x);
+	   if (b != VIRTUAL_NODE) b.setParent(x); // Never set a parent for a virtual node!
+
+	   x.setHeight(lowTree.getRoot().getHeight() + 1);
+	   x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
+	   IAVLNode newRoot = x;
+	   IAVLNode parent = newRoot.getParent();
+	   while(parent != null) {
+		   parent.setSubTreeSize(parent.getLeft().getSubTreeSize() + parent.getRight().getSubTreeSize() + 1);
+		   newRoot = parent;
+		   parent = parent.getParent();
+	   }
+	   highTree.rootNode = newRoot;
+	   lowTree.rootNode = newRoot;
+	   highTree.maxNode = highTree.findMaxNode(rootNode);
+	   lowTree.maxNode = lowTree.findMaxNode(rootNode);
+	   highTree.minNode= highTree.findMinNode(rootNode);
+	   lowTree.minNode = lowTree.findMinNode(rootNode);
+	   rebalancePostInsert(x);
 }
    
    
@@ -1001,7 +920,7 @@ public class AVLTree{
        if (this.isRoot(y)) {
            this.rootNode = x;
        }
-       else if (isRightSon(y)) {
+       else if (yParent.getRight() == y) {
            yParent.setRight(x);
        }
        else {
@@ -1009,17 +928,19 @@ public class AVLTree{
        }
        
        // x case
-       x.setParent(yParent);
-       x.setRight(y);
-       
+       if (x.isRealNode()) {
+    	   x.setParent(yParent);
+    	   x.setRight(y);
+       }
        // y case
-       y.setParent(x);
-       y.setLeft(b);
-       
+       if (y.isRealNode()) {
+    	   y.setParent(x);
+    	   y.setLeft(b);
+       }
        // b case
-       b.setParent(y);
-       
-       
+       if (b.isRealNode()) {
+    	   b.setParent(y);
+       }
        y.setSubTreeSize(y.getLeft().getSubTreeSize() + y.getRight().getSubTreeSize() + 1);
        x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
    }
@@ -1033,23 +954,28 @@ public class AVLTree{
 	          this.rootNode = y;
 	          y.setParent(null);
 	      }
-	      else if(isRightSon(x)){
+	      else if(xParent.getRight() == x){
 	          xParent.setRight(y);
 	      }
 	      else{
 	          xParent.setLeft(y);
 	      }
-	      
 	      // y case
-	      y.setParent(xParent);
+	      if (y.isRealNode()) {
+	    	  y.setParent(xParent);
+	      }
 	      y.setLeft(x);
 	      
 	      // x case
-	      x.setParent(y);
+	      if (x.isRealNode()) {
+	    	  x.setParent(y);
+	      }
 	      x.setRight(b);
 	      
 	      // b case
-	      b.setParent(x);
+	      if (b.isRealNode()) {
+	    	  b.setParent(x);
+	      }
 	      
 	      x.setSubTreeSize(x.getLeft().getSubTreeSize() + x.getRight().getSubTreeSize() + 1);
 	      y.setSubTreeSize(y.getLeft().getSubTreeSize() + y.getRight().getSubTreeSize() + 1);
@@ -1059,67 +985,7 @@ public class AVLTree{
        return node.getParent().getRight().getKey() == node.getKey(); 
        }
    
-   public static int[] rankDiff(IAVLNode n) {
-		return new int[] {n.getHeight() - n.getLeft().getHeight(), n.getHeight() - n.getRight().getHeight()};
-	}
    
-// DELETE BEFORE SUBMITTING (for test)
-   public boolean isValidTree(IAVLNode node) {
-       if (node==VIRTUAL_NODE) return true;
-
-       int [] diffs = rankDiff(node);
-       if (! ((diffs[0]==1&&diffs[1]==1) ||
-               (diffs[0]==2&&diffs[1]==1) ||
-               (diffs[0]==1&&diffs[1]==2))) {
-           System.out.println("Rank diff is wrong for "+node.getKey());
-           return false;
-       }
-
-       IAVLNode left = node.getLeft();
-       IAVLNode right = node.getRight();
-
-       int leftRank = left.getHeight();
-       if (leftRank + diffs[0] != node.getHeight()) {
-           System.out.println("Left rank sum is wrong for "+node.getKey());
-           return false;
-       }
-
-       int rightRank = right.getHeight();
-       if (rightRank + diffs[1] != node.getHeight()) {
-           System.out.println("Right rank sum is wrong for "+node.getKey());
-           return false;
-       }
-
-       if (node.getSubTreeSize() != left.getSubTreeSize() + right.getSubTreeSize() + 1) {
-           System.out.println("Size sum is wrong for "+node.getKey());
-           return false;
-       }
-
-       return isValidTree(node.getLeft())&&isValidTree(node.getRight());
-   }
-
-
-   // DELETE BEFORE SUBMITTING (for test)
-   public boolean smallerThan(int x) {
-       int[] keys = keysToArray();
-       for (int key : keys){
-           if (key >= x){
-               return false;
-           }
-       }
-       return true;
-   }
-
-   // DELETE BEFORE SUBMITTING (for test)
-   public boolean biggerThan(int x) {
-       int[] keys = keysToArray();
-       for (int key : keys){
-           if (key <= x){
-               return false;
-           }
-       }
-       return true;
-   }
    public boolean isRoot(IAVLNode node){
 	       return node.getKey() == this.rootNode.getKey();
 	      }
@@ -1139,8 +1005,6 @@ public class AVLTree{
 		public boolean isRealNode(); // Returns True if this is a non-virtual AVL node.
     	public void setHeight(int height); // Sets the height of the node.
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
-
-    	//
     	public void increaseSizeOfSubTreeOfAllParents(int inc);
     	public void setSubTreeSize(int size);
     	public int getSubTreeSize();
@@ -1163,6 +1027,9 @@ public class AVLTree{
 	  	private String value;
 	  	private int subTreeSize;
 	  	
+	  	public String toString() { 
+	  	    return "Key:" + this.getKey() + "', Height: '" + this.height + "', SubtreeSize: '" + this.subTreeSize + "'"  + "', Left: '" + this.getLeft().getKey() + "'"  + "', Right: '" + this.getRight().getKey()+ "'" ;
+	  	} 
 	  	
 	  	
 	  	public AVLNode(int key, String value) {
@@ -1170,6 +1037,7 @@ public class AVLTree{
 	  		this.value = value;
 	  		this.leftSonNode = (AVLNode) VIRTUAL_NODE;
 	  		this.rightSonNode = (AVLNode) VIRTUAL_NODE;
+	  		this.subTreeSize = 1;
 	  	}
 	  	
 	  	public AVLNode(int key, String value, IAVLNode parentNode, IAVLNode left, IAVLNode right, int height) {
@@ -1179,7 +1047,7 @@ public class AVLTree{
 	  		this.parentNode = (AVLTree.AVLNode) parentNode;
 	  		this.leftSonNode = (AVLTree.AVLNode) left;
 	  		this.rightSonNode = (AVLTree.AVLNode) right;
-	  		
+	  		this.subTreeSize = 1;
 	  	}
 	  	
 	  	public AVLNode() {
@@ -1271,13 +1139,70 @@ public class AVLTree{
 			   tempNode = tempNode.getParent();
 		   }
 	   }
-		public String toString() {
-			return "{Key: " + this.getKey() + ", Height: " + this.getHeight() + ", Tree size: " + this.getSubTreeSize() + "}";
-		}
-		
-		
-		
 		
 	} 
-		
+//DELETE BEFORE SUBMITTING (for test)
+  public boolean isValidTree(IAVLNode node) {
+      if (node==VIRTUAL_NODE) return true;
+      int [] diffs = rankDiff(node);
+      if (! ((diffs[0]==1&&diffs[1]==1) ||
+              (diffs[0]==2&&diffs[1]==1) ||
+              (diffs[0]==1&&diffs[1]==2))) {
+    	  //System.out.println(TreePrinter.print(this.getRoot()));
+          System.out.println("Rank diff is wrong for "+node.getKey());
+          return false;
+      }
+
+      IAVLNode left = node.getLeft();
+      IAVLNode right = node.getRight();
+
+      int leftRank = left.getHeight();
+      if (leftRank + diffs[0] != node.getHeight()) {
+          System.out.println("Left rank sum is wrong for "+node.getKey());
+          return false;
+      }
+
+      int rightRank = right.getHeight();
+      if (rightRank + diffs[1] != node.getHeight()) {
+          System.out.println("Right rank sum is wrong for "+node.getKey());
+          return false;
+      }
+
+      if (node.getSubTreeSize() != left.getSubTreeSize() + right.getSubTreeSize() + 1) {
+          System.out.println("Size sum is wrong for "+node.getKey());
+          return false;
+      }
+
+      return isValidTree(node.getLeft())&&isValidTree(node.getRight());
+  }
+
+
+  // DELETE BEFORE SUBMITTING (for test)
+  public boolean smallerThan(int x) {
+      int[] keys = keysToArray();
+      for (int key : keys){
+          if (key >= x){
+              return false;
+          }
+      }
+      return true;
+  }
+
+  // DELETE BEFORE SUBMITTING (for test)
+  public boolean biggerThan(int x) {
+      int[] keys = keysToArray();
+      for (int key : keys){
+          if (key <= x){
+              return false;
+          }
+      }
+      return true;
+  }
+  
+  public static int[] rankDiff(IAVLNode node) {
+	  return new int[] {node.getHeight() - node.getLeft().getHeight(), node.getHeight() - node.getRight().getHeight()};
+  }
+  
+  
+  
   }
