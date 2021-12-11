@@ -1,4 +1,4 @@
-package trees;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class TreePrinter
                     next.add(null);
                     next.add(null);
                 } else {
-                    String aa = n.getKey() + " : " + n.getSubTreeSize();
+                    String aa = n.getKey() + ":" + n.getSubTreeSize() + ":" + n.getHeight();
                     line.add(aa);
                     if (aa.length() > widest) widest = aa.length();
 
@@ -146,13 +146,28 @@ public class TreePrinter
     
     public static void main(String[] args) {
     	AVLTree tree = new AVLTree();
-    	int[] arr = {7, 10 ,5, 20 , 13, 30, 2, 1};
+    	int[] arr = {7, 10 ,5, 20 , 13};
     	for (int i : arr) {
     		tree.insert(i, null);
     	}
+    	AVLTree tree2 = new AVLTree();
+    	int[] arr2 = {100, 200, 50};
+    	for (int i : arr2) {
+    		tree2.insert(i, null);
+    	}
+    
+    	System.out.println("printing both trees");
     	print(tree.getRoot());
-    	tree.delete(13);
+    	print(tree2.getRoot());
+    	
+    	System.out.println("joining");
+    	IAVLNode node = new AVLTree().new AVLNode(49,"");
+    	tree2.join(node, tree);
+   	
+    	System.out.println("\n\n\n************\n\n\n\n");
+    	System.out.println("printing both trees");
     	print(tree.getRoot());
+    	print(tree2.getRoot());
     }
     
     
