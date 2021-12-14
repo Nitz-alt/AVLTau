@@ -164,7 +164,7 @@ public class AVLTree{
 					if(rankDifXA == 1 && rankDifXB == 2) {//rotate single right
 						rotateRight(x);
 						z.setHeight(z.getHeight() - 1);
-						numOps++; 
+						numOps += 2; 
 						break;
 					}
 					else if(rankDifXA == 2 && rankDifXB == 1) {//double rotate right
@@ -173,13 +173,13 @@ public class AVLTree{
 						x.setHeight(x.getHeight() - 1);
 						z.setHeight(z.getHeight() - 1);
 						b.setHeight(b.getHeight() + 1);
-						numOps++;
+						numOps += 5;
 						  break;
 					}
 					else if(rankDifXA == 1 && rankDifXB == 1) {
 						rotateRight(x);
 						x.setHeight(x.getHeight() + 1);
-						numOps++;
+						numOps += 2;
 					}		
 				}//(rankDifZY == 2)
         	  }// x is right child cases
@@ -200,7 +200,7 @@ public class AVLTree{
 					  if(rankDifXA == 1 && rankDifXB == 2) {//rotate single left
 						  rotateLeft(x);
 						  z.setHeight(z.getHeight() - 1);
-						  numOps++;
+						  numOps += 2;
 						  break;
 					  }
 					  if(rankDifXA ==2 && rankDifXB == 1) {
@@ -209,13 +209,13 @@ public class AVLTree{
 							x.setHeight(x.getHeight() - 1);
 							z.setHeight(z.getHeight() - 1);
 							b.setHeight(b.getHeight() + 1);
-							numOps++;
+							numOps += 5;
 							  break;
 					  }
 					  else if(rankDifXA == 1 && rankDifXB == 1) {
 						  rotateLeft(x);
 						  x.setHeight(x.getHeight() + 1);
-						  numOps++;
+						  numOps += 2;
 						}	  
 	        	  }
         	  }
@@ -471,7 +471,7 @@ public class AVLTree{
 				   else if(rightChildLeftRankDelta == 2 && rightChildRightRankDelta == 1) { // Right child is a (2,1) junction.
 					   rotateLeft(curr.getRight());
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += (1 + 2); // One rotation and demoting by 2.
+					   total += (1 + 1); // One rotation and demote.
 				   }
 				   else if(rightChildLeftRankDelta == 1 && rightChildRightRankDelta == 2) { // Right child is a (1,2) junction
 					   // Double rotation
@@ -481,7 +481,7 @@ public class AVLTree{
 					   prevRightChildLeft.setHeight(prevRightChildLeft.getHeight() + 1);
 					   rightchildNode.setHeight(rightchildNode.getHeight() - 1);
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += (2 + 4); // Double rotation and 4 demotes
+					   total += (2 + 3); // Double rotation and 4 demotes
 				   }
 			   }
 			   else if (rightRankDelta == 3) { // Symetrical cases
@@ -496,7 +496,7 @@ public class AVLTree{
 				   else if (leftChildRightRankDelta == 2 && leftChildLeftRankDelta == 1) { // Left child is a (1,2) junction
 					   rotateRight(leftChildNode);
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += (1 + 2); // One rotation and demoting by 2.
+					   total += (1 + 1); // One rotation and demote.
 				   }
 				   else if (leftChildRightRankDelta == 1 && leftChildLeftRankDelta == 2) { // Left child is a (2,1) junction
 					   // Double rotation
@@ -506,7 +506,7 @@ public class AVLTree{
 					   prevLeftChildRight.setHeight(prevLeftChildRight.getHeight() + 1);
 					   leftChildNode.setHeight(leftChildNode.getHeight() - 1);
 					   curr.setHeight(curr.getHeight() - 2);
-					   total += (2 + 4); // One rotation and 4 demotes;
+					   total += (2 + 3); // One rotation and 3 demotes;
 				   }
 			   }
 		   }
